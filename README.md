@@ -17,10 +17,42 @@ Diseñado como un envoltorio ligero con **Electron** que ejecuta el núcleo de [
 - **Asistente de bienvenida guiado**: Configura tus carpetas de películas y series en un par de clics sin editar ficheros de configuración.
 - **Tus archivos quedan intactos**: MediaWatch Server **nunca** renombra, mueve ni borra tus archivos de vídeo o carpetas.
 - **Escáner inteligente sin NFO**: Reconoce tus películas y series directamente por su nombre de archivo (limpiando etiquetas de release) y descarga sinopsis, carátulas y reparto oficiales de [The Movie Database (TMDb)](https://themoviedb.org).
-- **Compatible con todos los clientes**:
-  - **Navegador Web / PWA**: Interfaz fluida, banner héroe interactivo, estuche 3D y reproductor con cambio de audio y subtítulos al vuelo.
-  - **Android (Móvil / Tablet)**: App nativa con soporte para Google Cast.
-  - **Smart TV (Samsung Tizen / LG webOS)**: Diseñado para navegación fluida a 60 FPS con mando a distancia.
+- **Aceleración gráfica universal**: Aprovecha cualquier tarjeta gráfica para transcodificar vídeo en tiempo real sin saturar la CPU:
+  - **Intel**: Quick Sync Video (QSV) en Intel UHD Graphics, Iris Xe y gráficas dedicadas Intel Arc.
+  - **NVIDIA**: Aceleración por hardware NVENC (GTX / RTX).
+  - **AMD**: Aceleración por hardware AMF (Radeon).
+  - **CPU**: Modo seguro y universal por software (`libx264`).
+- **Vinculación instantánea con Código QR**: Haz clic derecho en el icono junto al reloj, pulsa *«Conectar móvil o tablet»* y apunta la cámara de tu móvil al código QR para empezar a ver tus películas al instante.
+- **Ecosistema multi-cliente completo**:
+  - **Navegador Web / PWA**: Interfaz fluida, banner héroe interactivo, estuche 3D de coleccionista y reproductor con cambio de audio y subtítulos al vuelo.
+  - **Android (Móvil / Tablet)**: App nativa en Kotlin + Jetpack Compose con soporte para Google Cast (disponible en el repo [MediaWatch](https://github.com/pacotegg/mediawatch)).
+  - **Smart TV (Samsung Tizen / LG webOS)**: Diseñado para navegación fluida a 60 FPS con mando a distancia D-pad.
+
+---
+
+## Ecosistema MediaWatch: ¿Cómo se complementan?
+
+```
+ ┌──────────────────────────────────────────────────────────────┐
+ │                   MediaWatch Server (Este repo)              │
+ │  App de escritorio para Windows · Instalador .exe · Bandeja  │
+ └──────────────────────────────┬───────────────────────────────┘
+                                │ ejecuta internamente
+                                ▼
+ ┌──────────────────────────────────────────────────────────────┐
+ │               MediaWatch Core (pacotegg/mediawatch)          │
+ │       Servidor Fastify · Motor de Streaming · Escáner TMDb   │
+ └──────┬───────────────────────┼───────────────────────┬───────┘
+        │ sirve a               │ sirve a               │ sirve a
+        ▼                       ▼                       ▼
+ ┌──────────────┐        ┌──────────────┐        ┌──────────────┐
+ │  Web Client  │        │  App Android │        │   Smart TV   │
+ │   React 19   │        │ Native Media3│        │ Samsung Tizen│
+ └──────────────┘        └──────────────┘        └──────────────┘
+```
+
+- **[MediaWatch Core](https://github.com/pacotegg/mediawatch)** es el corazón del proyecto: donde se desarrolla el servidor central, el reproductor web, la app de Android y la app de la tele.
+- **MediaWatch Server** (este repositorio) empaqueta ese motor en una aplicación de escritorio para Windows con instalador `.exe`, para que cualquiera pueda ejecutar su propio servidor sin conocimientos técnicos.
 
 ---
 
