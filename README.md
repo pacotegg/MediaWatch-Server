@@ -50,6 +50,22 @@ Al hacer clic derecho sobre el icono de MediaWatch Server junto al reloj de Wind
 
 ---
 
+## Descarga e instalación en Windows
+
+1. Ve a la sección de **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** y descarga el archivo `MediaWatch-Server-Setup.exe`.
+2. Ejecuta el archivo descargado.
+
+> [!NOTE]
+> **Aviso de Windows SmartScreen**:
+> Al tratarse de un proyecto independiente de código abierto sin certificado de firma digital comercial de pago (que tienen costes anuales elevados), Windows puede mostrar la pantalla azul:  
+> *«Windows protegió su PC (SmartScreen de Microsoft Defender)»*.  
+> 
+> Para continuar con la instalación, simplemente haz clic en **«Más información»** y luego en el botón **«Ejecutar de todas formas»**. El código fuente es 100% auditable y público bajo licencia GNU AGPL v3.
+
+3. Sigue los sencillos pasos del asistente de bienvenida para seleccionar las carpetas de tus películas y series. ¡Listo!
+
+---
+
 ## Estructura del repositorio
 
 ```text
