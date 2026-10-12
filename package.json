@@ -1,7 +1,7 @@
 {
   "name": "mediawatch-server",
-  "version": "1.0.2",
-  "description": "Servidor propio de películas y series todo-en-uno para Windows",
+  "version": "1.1.0",
+  "description": "Servidor propio de películas y series todo-en-uno para Windows y Linux",
   "main": "dist-electron/main.js",
   "author": "Paco Esteban",
   "license": "AGPL-3.0-or-later",
@@ -12,7 +12,8 @@
     "build": "npm run prepare:binaries && npm run build:core && npm run build:electron",
     "dev": "tsc && electron dist-electron/main.js",
     "start": "electron dist-electron/main.js",
-    "dist": "npm run build && electron-builder --win"
+    "dist": "npm run build && electron-builder --win",
+    "dist:linux": "npm run build && electron-builder --linux"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
@@ -29,6 +30,11 @@
     },
     "win": {
       "target": "nsis",
+      "icon": "assets/icon.png"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Video",
       "icon": "assets/icon.png"
     },
     "nsis": {

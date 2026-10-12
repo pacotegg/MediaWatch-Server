@@ -1,11 +1,11 @@
 # MediaWatch Server
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](LICENSE)
-[![Platform: Windows](https://img.shields.io/badge/Platform-Windows-0078D6.svg)](https://microsoft.com/windows)
+[![Platform: Windows | Linux](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-0078D6.svg)](https://github.com/pacotegg/MediaWatch-Server/releases)
 [![Electron](https://img.shields.io/badge/Electron-34%2B-47848F.svg)](https://www.electronjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-26%2B-green.svg)](https://nodejs.org/)
 
-**MediaWatch Server** es la aplicación de servidor propio todo-en-uno para Windows. Permite a cualquier persona alojar y reproducir su propia colección de cine y series en su ordenador o red local, de forma privada, sin suscripciones, sin depender de servicios en la nube y sin telemetría.
+**MediaWatch Server** es la aplicación de servidor propio todo-en-uno para **Windows y Linux**. Permite a cualquier persona alojar y reproducir su propia colección de cine y series en su ordenador o red local, de forma privada, sin suscripciones, sin depender de servicios en la nube y sin telemetría.
 
 Diseñado como un envoltorio ligero con **Electron** que ejecuta el núcleo de [Media Watch](https://github.com/pacotegg/mediawatch), integrando bandeja del sistema (System Tray), asistente gráfico de configuración inicial y escáner automático por nombre y TMDb.
 
@@ -82,9 +82,10 @@ Al hacer clic derecho sobre el icono de MediaWatch Server junto al reloj de Wind
 
 ---
 
-## Descarga e instalación en Windows
+## Descarga e instalación
 
-1. Ve a la sección de **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** y descarga el archivo `MediaWatch-Server-Setup.exe`.
+### Windows
+1. Ve a **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** y descarga `MediaWatch-Server-Setup.exe`.
 2. Ejecuta el archivo descargado.
 
 > [!NOTE]
@@ -95,6 +96,19 @@ Al hacer clic derecho sobre el icono de MediaWatch Server junto al reloj de Wind
 > Para continuar con la instalación, simplemente haz clic en **«Más información»** y luego en el botón **«Ejecutar de todas formas»**. El código fuente es 100% auditable y público bajo licencia GNU AGPL v3.
 
 3. Sigue los sencillos pasos del asistente de bienvenida para seleccionar las carpetas de tus películas y series. ¡Listo!
+
+### Linux
+1. Ve a **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** y descarga el archivo según tu distribución:
+   - **AppImage** (compatible con cualquier distribución moderna):
+     ```bash
+     chmod +x MediaWatch-Server-*.AppImage
+     ./MediaWatch-Server-*.AppImage
+     ```
+   - **Paquete DEB** (Ubuntu, Debian, Linux Mint):
+     ```bash
+     sudo dpkg -i mediawatch-server_*_amd64.deb
+     ```
+2. La app abrirá el asistente gráfico de primer arranque y se minimizará en la bandeja del sistema.
 
 ---
 

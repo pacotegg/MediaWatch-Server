@@ -23,7 +23,8 @@ export class ServerManager {
   }
 
   private findBinary(name: 'ffmpeg' | 'ffprobe'): string | undefined {
-    const filename = `${name}.exe`;
+    const ext = process.platform === 'win32' ? '.exe' : '';
+    const filename = `${name}${ext}`;
     if (app.isPackaged) {
       const packagedPath = join(process.resourcesPath, 'bin', filename);
       if (existsSync(packagedPath)) return packagedPath;

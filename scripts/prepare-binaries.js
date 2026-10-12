@@ -12,12 +12,15 @@ if (!fs.existsSync(binDir)) {
   fs.mkdirSync(binDir, { recursive: true });
 }
 
-const targetFfmpeg = path.join(binDir, 'ffmpeg.exe');
-const targetFfprobe = path.join(binDir, 'ffprobe.exe');
+const isWin = process.platform === 'win32';
+const ext = isWin ? '.exe' : '';
+const targetFfmpeg = path.join(binDir, `ffmpeg${ext}`);
+const targetFfprobe = path.join(binDir, `ffprobe${ext}`);
 
 function copyIfFound(cmd, target) {
   try {
-    const whereOutput = execSync(`where.exe ${cmd}`, { encoding: 'utf8' }).trim().split('\r\n')[0];
+    const lookupCmd = isWin ? `where.exe ${cmd}` : `which ${cmd}`;
+    const whereOutput = execSync(lookupCmd, { encoding: 'utf8' }).trim().split('\n')[0].replace(/\r$/, '');
     if (whereOutput && fs.existsSync(whereOutput)) {
       console.log(`Copiando ${cmd} desde ${whereOutput}...`);
       fs.copyFileSync(whereOutput, target);
