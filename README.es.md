@@ -8,6 +8,8 @@
 
 [English](README.md) · [Español](README.es.md)
 
+> ☕ **¿Te gusta MediaWatch Server?** Si quieres apoyar el desarrollo continuo y ayudarme a mantenerlo, puedes [invitarme a un café en Ko-fi](https://ko-fi.com/pacotegg) o usar el botón **Sponsor** de arriba.
+
 **MediaWatch Server** es una aplicación de servidor independiente para **Windows y Linux** que convierte tu PC, mini-PC o servidor casero en tu propio centro privado de streaming para películas y series — sin cuentas en la nube, sin suscripciones de pago y sin telemetría.
 
 Empaqueté el motor de [Media Watch](https://github.com/pacotegg/mediawatch) dentro de esta aplicación de escritorio con **Electron** para que cualquiera pueda tener su servidor de streaming funcionando en un par de minutos, sin necesidad de pelearse con Node.js, terminales ni servicios de fondo. Vive tranquilamente en la bandeja del sistema (junto al reloj), descarga automáticamente las carátulas y sinopsis desde TMDb por nombre de archivo (sin obligarte a tener archivos `.nfo` previos) e incluye un código QR para conectar el móvil o la tablet al instante.

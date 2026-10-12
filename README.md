@@ -8,6 +8,8 @@
 
 [English](README.md) · [Español](README.es.md)
 
+> ☕ **Enjoying MediaWatch Server?** If you'd like to support ongoing development, you can [buy me a coffee on Ko-fi](https://ko-fi.com/pacotegg) or use the **Sponsor** button above!
+
 **MediaWatch Server** is a standalone, self-hosted streaming server for **Windows and Linux**. It turns your PC, mini-PC, or home server into a private streaming hub for your movies and TV shows — no cloud accounts, no subscription paywalls, and no telemetry.
 
 I built this desktop wrapper using **Electron** around the core [Media Watch](https://github.com/pacotegg/mediawatch) engine so anyone can get a personal streaming server running in minutes without dealing with Node.js setups, command lines, or manual service managers. It sits quietly in your system tray, includes an automatic TMDb metadata scraper (no existing `.nfo` files needed), and features a built-in QR code tool to pair your phone or tablet instantly.
