@@ -7,37 +7,19 @@
 
 [English](README.md) · [Español](README.es.md)
 
-**MediaWatch Server** is an all-in-one, self-hosted personal movie and TV series streaming server for **Windows and Linux**. It enables anyone to easily run and stream their personal media collection across local networks, web browsers, Smart TVs, and mobile devices — fully private, without subscriptions, cloud dependencies, or telemetry.
+**MediaWatch Server** is a standalone, self-hosted streaming server for **Windows and Linux**. It turns your PC, mini-PC, or home server into a private streaming hub for your movies and TV shows — no cloud accounts, no subscription paywalls, and no telemetry.
 
-Designed as a lightweight desktop wrapper using **Electron** that bundles and runs the core engine of [Media Watch](https://github.com/pacotegg/mediawatch), featuring an unobtrusive system tray resident, a visual first-run setup wizard, and an automated name-based TMDb metadata scraper (no local `.nfo` files required).
-
----
-
-## Key Features
-
-- **Silent Background Execution**: Lives in your system tray (next to the clock on Windows or in your Linux panel). Your server stays active in the background ready for your TV, tablet, or phone.
-- **Guided Setup Wizard**: Add and organize your movies and series libraries with simple folder pickers — zero manual JSON or YAML configuration needed.
-- **Untouched Media Files**: MediaWatch Server **never** renames, moves, or deletes your source video files or directories.
-- **Intelligent NFO-Free Scanner**: Automatically cleans scene release naming tags (e.g., `1080p.BluRay.x264-GRP`), detects movie titles and release years, and downloads official artwork, plots, cast, and episode details from [The Movie Database (TMDb)](https://themoviedb.org).
-- **Universal Hardware Acceleration**: Seamless real-time video transcoding powered by your dedicated or integrated GPU:
-  - **Intel**: Quick Sync Video (QSV) on Intel UHD Graphics, Iris Xe, and dedicated Intel Arc GPUs (`h264_qsv`).
-  - **NVIDIA**: Hardware-accelerated NVENC for GeForce GTX and RTX graphics cards (`h264_nvenc`).
-  - **AMD**: Hardware-accelerated AMF for Radeon GPUs (`h264_amf`).
-  - **CPU**: Reliable universal software fallback (`libx264`).
-- **Instant Mobile Pairing via QR Code**: Right-click the tray icon, click *«Connect mobile or tablet»*, and scan the generated QR code with your phone camera to stream immediately.
-- **Full Multi-Device Ecosystem**:
-  - **Web Client / PWA**: Responsive React 19 interface with hero trailer banners, interactive 3D steelbook viewer, and seamless audio/subtitle track switching.
-  - **Android (Mobile / Tablet / Cast)**: Native Jetpack Compose & Media3 client with Google Cast integration (available in the core [MediaWatch repository](https://github.com/pacotegg/mediawatch)).
-  - **Smart TV (Samsung Tizen / LG webOS)**: Optimized for 60 FPS remote-control D-pad spatial navigation.
+I built this desktop wrapper using **Electron** around the core [Media Watch](https://github.com/pacotegg/mediawatch) engine so anyone can get a personal streaming server running in minutes without dealing with Node.js setups, command lines, or manual service managers. It sits quietly in your system tray, includes an automatic TMDb metadata scraper (no existing `.nfo` files needed), and features a built-in QR code tool to pair your phone or tablet instantly.
 
 ---
 
-## MediaWatch Ecosystem Architecture
+## MediaWatch Ecosystem: How the two repositories work together
 
-```
+```text
  ┌──────────────────────────────────────────────────────────────┐
  │                MediaWatch Server (This Repository)           │
  │  Desktop Application · Windows (.exe) & Linux (AppImage/deb) │
+ │  Tray icon · Setup wizard · QR code pairing · Bundled FFmpeg │
  └──────────────────────────────┬───────────────────────────────┘
                                 │ executes internally
                                 ▼
@@ -53,121 +35,130 @@ Designed as a lightweight desktop wrapper using **Electron** that bundles and ru
  └──────────────┘        └──────────────┘        └──────────────┘
 ```
 
-- **[MediaWatch Core](https://github.com/pacotegg/mediawatch)**: The central open-source engine powering the Fastify backend, web application, Samsung Tizen Smart TV app, and native Android client.
-- **MediaWatch Server** (this repo): Packages the core engine into a standalone desktop application with native system installers, bundled FFmpeg binaries, and an intuitive graphical setup interface.
+- **[MediaWatch Core](https://github.com/pacotegg/mediawatch)**: The engine powering the Fastify backend, web application, Samsung Tizen Smart TV app, and native Android app.
+- **MediaWatch Server** (this repo): Packages the engine into ready-to-run desktop installers for Windows and Linux with bundled FFmpeg binaries and a simple setup wizard.
 
 ---
 
-## Organizing Your Media Files
+## Hardware Requirements
 
-MediaWatch Server automatically matches movies and shows using their **title and release year**. For optimal scraping accuracy, standard naming conventions are recommended:
+MediaWatch is designed to be lightweight. You don't need a high-end server; an inexpensive mini-PC or an old laptop handles it easily.
 
-```text
-Movies\Blade Runner (1982)\Blade Runner (1982).mkv
-Movies\The Matrix (1999)\The Matrix (1999).mkv
-Shows\Breaking Bad (2008)\Season 01\Breaking Bad - S01E01.mkv
-Shows\Friends (1994)\Season 01\Friends - S01E01.mkv
-```
+### 1. Direct Play Mode (Local network playback)
+When your device (TV, phone, computer) natively supports the video format:
+- **CPU**: Any 64-bit x86 processor (Intel Celeron N5105/J4125, Intel N100, or older desktop Core i3/i5).
+- **RAM**: **2 GB minimum** (the application sits around ~150–250 MB in memory).
+- **Storage**: ~400 MB for the app + 2 to 4 GB for posters, artwork cache, and metadata database.
+- **Network**: Gigabit Ethernet or 5 GHz Wi-Fi recommended for 4K remuxes (50–90 Mbps).
 
-> **Tip**: If your filenames include scene tags such as `The.Matrix.1999.1080p.BluRay.x264-GRP`, the scanner cleans them automatically. Any ambiguous matches will be queued under **Settings &rarr; Metadata &rarr; Pending Review** so you can pick the exact match with a single click.
+### 2. Real-Time Hardware Transcoding (GPU Accelerated)
+When transcoding is required (burned subtitles, streaming outside home, or unsupported codecs):
+- **Intel (Recommended / best efficiency)**:
+  - 7th Gen Core (Kaby Lake, 2017+) or newer with **Intel UHD / HD 600+** graphics. Budget chips like **Intel N100 / N95 / N200** transcode 4K HDR effortlessly using **Quick Sync (QSV)**.
+  - Dedicated **Intel Arc** GPUs (A310, A380, A750, A770).
+- **NVIDIA**:
+  - GeForce **GTX 1050 or higher**, GTX 1650/1660, or any **RTX series** (20xx/30xx/40xx/50xx) with NVENC support.
+- **AMD**:
+  - Ryzen APUs with Vega / RDNA integrated graphics, or dedicated Radeon RX 400 series or newer (AMF support).
+- **RAM**: **4 GB or more**.
+
+### 3. Software Transcoding (CPU Only, without GPU)
+- **CPU**: 4 cores / 8 threads minimum for real-time 1080p transcoding.  
+  *(Honest note: Transcoding 4K HDR on CPU will pin all cores to 100% and will likely buffer; use hardware acceleration for 4K).*
 
 ---
 
-## System Tray Quick Controls
+## Hardware Transcoding: H.264 & HEVC / x265
 
-Right-clicking the MediaWatch Server tray icon provides instant shortcuts:
-1. **Open MediaWatch in Browser**: Launches the web player in your default browser (`http://localhost:8730`).
-2. **Copy Local Network URL**: Copies your local LAN address (e.g. `http://192.168.1.50:8730`) to paste into TV or mobile clients.
-3. **Connect Mobile or Tablet (QR Code)**: Displays a popup with a high-contrast QR code for instant phone pairing.
-4. **Start with Windows / System Login**: Toggles automatic startup when you log in.
-5. **Open Data and Logs Folder**: Direct access to `%APPDATA%\MediaWatchServer\data` (or `~/.config/MediaWatchServer/data` on Linux).
-6. **Restart / Start / Quit**: Manage the server process cleanly without opening terminal windows.
+MediaWatch Server supports GPU-accelerated transcoding in both **H.264** and **HEVC (H.265)**:
+
+- **Intel Quick Sync**: `h264_qsv` & `hevc_qsv` (native 10-bit HDR with `vpp_qsv` hardware tonemapping).
+- **NVIDIA NVENC**: `h264_nvenc` & `hevc_nvenc`.
+- **AMD AMF**: `h264_amf` & `hevc_amf`.
+- **CPU Fallback**: `libx264` & `libx265`.
+
+### Which transcode codec should you pick?
+- **H.264 (Default)**: Plays everywhere. Every browser (Firefox on Windows/Linux, Chromium browsers without HEVC licenses, old laptops) supports H.264 without black screens.
+- **HEVC / H.265**: Reduces bandwidth by ~40–50% at identical visual quality and handles 10-bit HDR natively. Recommended if your primary clients are the Android app, Samsung Smart TV, or browsers with native HEVC hardware decoding.
+- Toggle between them anytime in **Settings &rarr; Transcoding &rarr; Transcode Codec**.
+
+---
+
+## Key Features
+
+- **Silent System Tray Operation**: Lives next to your clock on Windows or in your Linux system bar. Right-click for quick controls.
+- **First-Run Wizard**: Point to your movie and series folders with a native file dialog.
+- **Safe with your files**: MediaWatch Server **never renames, moves, or touches** your source video files or directories.
+- **Automatic TMDb Metadata Scraper**: Cleans scene release tags (e.g. `1080p.BluRay.x264-GRP`), identifies the title and year, and downloads official artwork, plot summaries, cast, and episode info from [The Movie Database (TMDb)](https://themoviedb.org).
+- **Instant Mobile Pairing via QR Code**: Right-click the tray icon &rarr; *«Connect mobile or tablet»*, scan the QR code with your phone camera, and start streaming immediately on your local network.
+- **Full Multi-Device Ecosystem**:
+  - **Web Client / PWA**: React 19 interface with hero trailer banners, interactive 3D steelbook viewer, and seamless audio/subtitle track switching.
+  - **Android (Phone / Tablet / Google Cast)**: Native Jetpack Compose & Media3 client (available in the core [MediaWatch repository](https://github.com/pacotegg/mediawatch)).
+  - **Samsung Smart TV (Tizen)**: Smooth 60 FPS remote-control D-pad spatial navigation with customizable grab-and-drop menus.
 
 ---
 
 ## Download & Installation
 
 ### Windows
-1. Head over to **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** and download `MediaWatch-Server-Setup.exe`.
-2. Run the downloaded installer.
+1. Go to **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** and download `MediaWatch-Server-Setup.exe`.
+2. Run the installer and follow the 3-step setup wizard.
 
 > [!NOTE]
-> **Windows SmartScreen Notice**:
-> Because MediaWatch Server is an independent open-source project without a costly commercial code-signing certificate, Windows Defender SmartScreen may display the prompt:  
-> *«Windows protected your PC»*.  
+> **Windows SmartScreen Notice**:  
+> Because MediaWatch Server is an independent open-source project without a costly commercial code-signing certificate, Windows Defender SmartScreen may show a prompt saying *«Windows protected your PC»*.  
 > 
-> To proceed, click **«More info»** and then click the **«Run anyway»** button. The application is completely open-source and auditable under the GNU AGPL v3 license.
-
-3. Follow the visual setup wizard to select your movie and series folders. Done!
+> To proceed, click **«More info»** and then click **«Run anyway»**. The code is completely open-source and auditable under the GNU AGPL v3 license.
 
 ### Linux
-1. Head over to **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** and download the package for your distribution:
-   - **AppImage** (universal, works on any modern Linux distribution):
+1. Go to **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** and download the package for your distro:
+   - **AppImage** (universal, runs on any modern Linux distribution):
      ```bash
      chmod +x MediaWatch-Server-*.AppImage
      ./MediaWatch-Server-*.AppImage
      ```
-   - **DEB Package** (Ubuntu, Debian, Linux Mint):
+     *Note on Ubuntu 22.04+, Debian 12, and Fedora*: make sure `libfuse2` is installed:
+     ```bash
+     sudo apt install libfuse2
+     ```
+   - **DEB Package** (Debian, Ubuntu, Linux Mint):
      ```bash
      sudo dpkg -i mediawatch-server_*_amd64.deb
      ```
-2. The app will launch the setup wizard and minimize to your desktop notification area.
+
+#### GPU Acceleration on Linux:
+- **Intel QSV**: Install the non-free media drivers (`sudo apt install intel-media-va-driver-non-free vainfo`) and ensure your user is in the `video` and `render` groups (`sudo usermod -aG render,video $USER`).
+- **NVIDIA NVENC**: Install official proprietary drivers (`nvidia-driver-xxx`).
 
 ---
 
-## Repository Structure
+## Organizing Your Media Files
+
+MediaWatch matches movies and shows using **title and release year**:
 
 ```text
-MediaWatch-Server/
-├── app/               # Electron desktop shell
-│   ├── src/           # Main process, system tray, process supervisor & IPC
-│   ├── wizard/        # First-run guided setup wizard HTML/CSS/JS
-│   └── connect/       # Interactive mobile pairing QR code window
-├── assets/            # App icons and graphics
-├── core/              # Git submodule -> pacotegg/mediawatch (Fastify server & React web)
-├── scripts/           # Portable binary preparation tools
-├── LICENSE            # GNU AGPL v3.0 License
-└── package.json       # Electron packaging & electron-builder configuration
+Movies/Blade Runner (1982)/Blade Runner (1982).mkv
+Movies/The Matrix (1999)/The Matrix (1999).mkv
+Shows/Breaking Bad (2008)/Season 01/Breaking Bad - S01E01.mkv
+Shows/Friends (1994)/Season 01/Friends - S01E01.mkv
 ```
+
+Scene filenames like `The.Matrix.1999.1080p.BluRay.x264-GRP` are cleaned automatically. If any title is ambiguous, it appears under **Settings &rarr; Metadata &rarr; Pending Review** so you can confirm the right match with a single click.
 
 ---
 
-## Local Development & Building from Source
+## System Tray Shortcuts
 
-### Prerequisites
-- Windows 10/11 or modern Linux distribution (Ubuntu 22.04+)
-- [Node.js](https://nodejs.org) v22+ (v26 recommended)
-- Git with submodule recursion enabled:
-  ```bash
-  git clone --recurse-submodules https://github.com/pacotegg/MediaWatch-Server.git
-  ```
-
-### Development Setup
-
-1. Install dependencies:
-   ```bash
-   npm install
-   cd core && npm install && npm run build --workspace web && cd ..
-   ```
-
-2. Compile and run in development mode:
-   ```bash
-   npm run dev
-   ```
-
-3. Package desktop installer:
-   - For Windows (`.exe` NSIS):
-     ```bash
-     npm run dist
-     ```
-   - For Linux (`.AppImage` & `.deb`):
-     ```bash
-     npm run dist:linux
-     ```
-   Packaged artifacts will be saved in the `release/` directory.
+Right-clicking the tray icon provides instant shortcuts:
+1. **Open MediaWatch in Browser**: Opens the web player at `http://localhost:8730`.
+2. **Copy Local Network URL**: Copies your LAN address (e.g. `http://192.168.1.50:8730`) to paste into Smart TVs or mobile devices.
+3. **Connect Mobile or Tablet (QR Code)**: Pops up a high-contrast QR code for instant phone pairing.
+4. **Start with Windows / System Login**: Toggles automatic launch on system boot.
+5. **Open Data and Logs Folder**: Direct shortcut to `%APPDATA%\MediaWatchServer\data` (or `~/.config/MediaWatchServer/data` on Linux).
+6. **Restart / Start / Quit**: Manage the server process cleanly without terminal windows.
 
 ---
 
 ## License
 
-MediaWatch Server is free and open-source software distributed under the terms of the **GNU Affero General Public License v3.0 (AGPLv3)**. See the [LICENSE](LICENSE) file for complete details.
+MediaWatch Server is licensed under the **GNU Affero General Public License v3.0 (AGPLv3)**. See [LICENSE](LICENSE) for details.
