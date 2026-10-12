@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Bienvenido a MediaWatch Server</title>
+  <link rel="stylesheet" href="wizard.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="../../assets/icon.png" alt="Logo" class="logo">
+        <div class="brand-text">
+          <h1>MediaWatch</h1>
+          <span class="badge">Server</span>
+        </div>
+      </div>
+      <nav class="steps-nav">
+        <div class="step-item active" data-step="1">
+          <span class="step-num">1</span>
+          <span class="step-title">Bienvenida</span>
+        </div>
+        <div class="step-item" data-step="2">
+          <span class="step-num">2</span>
+          <span class="step-title">Organización</span>
+        </div>
+        <div class="step-item" data-step="3">
+          <span class="step-num">3</span>
+          <span class="step-title">Bibliotecas</span>
+        </div>
+        <div class="step-item" data-step="4">
+          <span class="step-num">4</span>
+          <span class="step-title">Metadatos TMDb</span>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <!-- PASO 1: Bienvenida -->
+      <section class="step-pane active" id="pane-1">
+        <h2>Tu servidor personal de cine y series</h2>
+        <p class="lead">
+          MediaWatch te permite reproducir toda tu biblioteca de películas y series desde cualquier navegador, Smart TV o móvil, sin suscripciones ni telemetría.
+        </p>
+        <div class="card info-card">
+          <h3>¿Cómo funciona?</h3>
+          <ul>
+            <li><strong>Tus archivos intactos:</strong> MediaWatch nunca renombra ni borra tus ficheros.</li>
+            <li><strong>Siempre en segundo plano:</strong> El servidor queda activo junto al reloj de Windows para que puedas conectar tus dispositivos cuando quieras.</li>
+            <li><strong>Sin nubes externas:</strong> Todo se ejecuta en tu propio ordenador.</li>
+          </ul>
+        </div>
+        <div class="actions">
+          <div></div>
+          <button class="btn btn-primary next-btn">Comenzar configuración &rarr;</button>
+        </div>
+      </section>
+
+      <!-- PASO 2: Nombres y organización -->
+      <section class="step-pane" id="pane-2">
+        <h2>Cómo organizar tus archivos</h2>
+        <p class="lead">
+          MediaWatch reconoce tus títulos automáticamente por su <strong>nombre y año</strong>.
+        </p>
+        <div class="code-box">
+          <code>
+            Películas\Blade Runner (1982)\Blade Runner (1982).mkv<br>
+            Series\Breaking Bad (2008)\Season 01\Breaking Bad - S01E01.mkv
+          </code>
+        </div>
+        <div class="card tip-card">
+          <p>
+            Si tus archivos tienen nombres de release tipo <code>The.Matrix.1999.1080p.BluRay.x264</code>, el servidor intentará limpiarlos de forma inteligente. Si un título queda en duda, podrás revisarlo cómodamente en el panel de administrador.
+          </p>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary prev-btn">&larr; Atrás</button>
+          <button class="btn btn-primary next-btn">Entendido, continuar &rarr;</button>
+        </div>
+      </section>
+
+      <!-- PASO 3: Selección de bibliotecas -->
+      <section class="step-pane" id="pane-3">
+        <h2>Añade tus carpetas</h2>
+        <p class="lead">
+          Elige dónde guardas tus películas y series en este equipo.
+        </p>
+        <div class="form-group">
+          <label>Carpeta de Películas</label>
+          <div class="input-with-button">
+            <input type="text" id="movies-path" placeholder="C:\Videos\Peliculas" readonly>
+            <button class="btn btn-secondary browse-btn" data-target="movies-path" data-kind="movie">Examinar...</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Carpeta de Series</label>
+          <div class="input-with-button">
+            <input type="text" id="shows-path" placeholder="C:\Videos\Series" readonly>
+            <button class="btn btn-secondary browse-btn" data-target="shows-path" data-kind="show">Examinar...</button>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary prev-btn">&larr; Atrás</button>
+          <button class="btn btn-primary next-btn" id="btn-validate-libs">Continuar &rarr;</button>
+        </div>
+      </section>
+
+      <!-- PASO 4: TMDb y Arranque -->
+      <section class="step-pane" id="pane-4">
+        <h2>Carátulas y metadatos</h2>
+        <p class="lead">
+          MediaWatch descarga sinopsis, carátulas y reparto oficiales de <strong>The Movie Database (TMDb)</strong>.
+        </p>
+        <div class="form-group">
+          <label>Clave de API de TMDb (Opcional, pero muy recomendada)</label>
+          <input type="text" id="tmdb-key" placeholder="Pega tu clave de API v3 aquí...">
+          <small class="hint">Es 100% gratuita para uso personal en <a href="#" id="link-tmdb">themoviedb.org</a> (Ajustes &rarr; API). Puedes añadirla ahora o más tarde.</small>
+        </div>
+        <div class="card summary-card">
+          <h3>¡Todo listo para arrancar!</h3>
+          <p>Al pulsar <strong>Iniciar Servidor</strong>, MediaWatch arrancará en segundo plano y abrirá tu navegador para que crees tu perfil de Administrador con un PIN de seguridad.</p>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary prev-btn">&larr; Atrás</button>
+          <button class="btn btn-success" id="btn-finish">Iniciar Servidor &rarr;</button>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="wizard.js"></script>
+</body>
+</html>

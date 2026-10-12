@@ -1,0 +1,15 @@
+# Node & build
+node_modules/
+dist/
+dist-electron/
+build/
+out/
+
+# App runtime & data
+runtime/
+data/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

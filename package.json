@@ -1,0 +1,55 @@
+{
+  "name": "mediawatch-server",
+  "version": "1.0.0",
+  "description": "Servidor propio de películas y series todo-en-uno para Windows",
+  "main": "dist-electron/main.js",
+  "author": "Paco Esteban",
+  "license": "AGPL-3.0-or-later",
+  "scripts": {
+    "build:core": "cd core && npm run build --workspace web",
+    "build:electron": "tsc",
+    "build": "npm run build:core && npm run build:electron",
+    "dev": "tsc && electron dist-electron/main.js",
+    "start": "electron dist-electron/main.js",
+    "dist": "npm run build && electron-builder --win"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "electron": "^34.2.0",
+    "electron-builder": "^25.1.8",
+    "typescript": "^5.7.2"
+  },
+  "build": {
+    "appId": "casa.mediawatch.server",
+    "productName": "MediaWatch Server",
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true
+    },
+    "extraResources": [
+      {
+        "from": "core/server",
+        "to": "core/server",
+        "filter": ["**/*", "!**/node_modules/**"]
+      },
+      {
+        "from": "core/web/dist",
+        "to": "core/web/dist"
+      },
+      {
+        "from": "assets",
+        "to": "assets"
+      }
+    ]
+  }
+}
