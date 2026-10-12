@@ -5,159 +5,169 @@
 [![Electron](https://img.shields.io/badge/Electron-34%2B-47848F.svg)](https://www.electronjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-26%2B-green.svg)](https://nodejs.org/)
 
-**MediaWatch Server** es la aplicación de servidor propio todo-en-uno para **Windows y Linux**. Permite a cualquier persona alojar y reproducir su propia colección de cine y series en su ordenador o red local, de forma privada, sin suscripciones, sin depender de servicios en la nube y sin telemetría.
+[English](README.md) · [Español](README.es.md)
 
-Diseñado como un envoltorio ligero con **Electron** que ejecuta el núcleo de [Media Watch](https://github.com/pacotegg/mediawatch), integrando bandeja del sistema (System Tray), asistente gráfico de configuración inicial y escáner automático por nombre y TMDb.
+**MediaWatch Server** is an all-in-one, self-hosted personal movie and TV series streaming server for **Windows and Linux**. It enables anyone to easily run and stream their personal media collection across local networks, web browsers, Smart TVs, and mobile devices — fully private, without subscriptions, cloud dependencies, or telemetry.
 
----
-
-## Características principales
-
-- **Ejecución silenciosa en segundo plano**: Se minimiza en la bandeja de Windows junto al reloj. Tu servidor siempre está listo cuando enciendes la tele o abres el móvil.
-- **Asistente de bienvenida guiado**: Configura tus carpetas de películas y series en un par de clics sin editar ficheros de configuración.
-- **Tus archivos quedan intactos**: MediaWatch Server **nunca** renombra, mueve ni borra tus archivos de vídeo o carpetas.
-- **Escáner inteligente sin NFO**: Reconoce tus películas y series directamente por su nombre de archivo (limpiando etiquetas de release) y descarga sinopsis, carátulas y reparto oficiales de [The Movie Database (TMDb)](https://themoviedb.org).
-- **Aceleración gráfica universal**: Aprovecha cualquier tarjeta gráfica para transcodificar vídeo en tiempo real sin saturar la CPU:
-  - **Intel**: Quick Sync Video (QSV) en Intel UHD Graphics, Iris Xe y gráficas dedicadas Intel Arc.
-  - **NVIDIA**: Aceleración por hardware NVENC (GTX / RTX).
-  - **AMD**: Aceleración por hardware AMF (Radeon).
-  - **CPU**: Modo seguro y universal por software (`libx264`).
-- **Vinculación instantánea con Código QR**: Haz clic derecho en el icono junto al reloj, pulsa *«Conectar móvil o tablet»* y apunta la cámara de tu móvil al código QR para empezar a ver tus películas al instante.
-- **Ecosistema multi-cliente completo**:
-  - **Navegador Web / PWA**: Interfaz fluida, banner héroe interactivo, estuche 3D de coleccionista y reproductor con cambio de audio y subtítulos al vuelo.
-  - **Android (Móvil / Tablet)**: App nativa en Kotlin + Jetpack Compose con soporte para Google Cast (disponible en el repo [MediaWatch](https://github.com/pacotegg/mediawatch)).
-  - **Smart TV (Samsung Tizen / LG webOS)**: Diseñado para navegación fluida a 60 FPS con mando a distancia D-pad.
+Designed as a lightweight desktop wrapper using **Electron** that bundles and runs the core engine of [Media Watch](https://github.com/pacotegg/mediawatch), featuring an unobtrusive system tray resident, a visual first-run setup wizard, and an automated name-based TMDb metadata scraper (no local `.nfo` files required).
 
 ---
 
-## Ecosistema MediaWatch: ¿Cómo se complementan?
+## Key Features
+
+- **Silent Background Execution**: Lives in your system tray (next to the clock on Windows or in your Linux panel). Your server stays active in the background ready for your TV, tablet, or phone.
+- **Guided Setup Wizard**: Add and organize your movies and series libraries with simple folder pickers — zero manual JSON or YAML configuration needed.
+- **Untouched Media Files**: MediaWatch Server **never** renames, moves, or deletes your source video files or directories.
+- **Intelligent NFO-Free Scanner**: Automatically cleans scene release naming tags (e.g., `1080p.BluRay.x264-GRP`), detects movie titles and release years, and downloads official artwork, plots, cast, and episode details from [The Movie Database (TMDb)](https://themoviedb.org).
+- **Universal Hardware Acceleration**: Seamless real-time video transcoding powered by your dedicated or integrated GPU:
+  - **Intel**: Quick Sync Video (QSV) on Intel UHD Graphics, Iris Xe, and dedicated Intel Arc GPUs (`h264_qsv`).
+  - **NVIDIA**: Hardware-accelerated NVENC for GeForce GTX and RTX graphics cards (`h264_nvenc`).
+  - **AMD**: Hardware-accelerated AMF for Radeon GPUs (`h264_amf`).
+  - **CPU**: Reliable universal software fallback (`libx264`).
+- **Instant Mobile Pairing via QR Code**: Right-click the tray icon, click *«Connect mobile or tablet»*, and scan the generated QR code with your phone camera to stream immediately.
+- **Full Multi-Device Ecosystem**:
+  - **Web Client / PWA**: Responsive React 19 interface with hero trailer banners, interactive 3D steelbook viewer, and seamless audio/subtitle track switching.
+  - **Android (Mobile / Tablet / Cast)**: Native Jetpack Compose & Media3 client with Google Cast integration (available in the core [MediaWatch repository](https://github.com/pacotegg/mediawatch)).
+  - **Smart TV (Samsung Tizen / LG webOS)**: Optimized for 60 FPS remote-control D-pad spatial navigation.
+
+---
+
+## MediaWatch Ecosystem Architecture
 
 ```
  ┌──────────────────────────────────────────────────────────────┐
- │                   MediaWatch Server (Este repo)              │
- │  App de escritorio para Windows · Instalador .exe · Bandeja  │
+ │                MediaWatch Server (This Repository)           │
+ │  Desktop Application · Windows (.exe) & Linux (AppImage/deb) │
  └──────────────────────────────┬───────────────────────────────┘
-                                │ ejecuta internamente
+                                │ executes internally
                                 ▼
  ┌──────────────────────────────────────────────────────────────┐
- │               MediaWatch Core (pacotegg/mediawatch)          │
- │       Servidor Fastify · Motor de Streaming · Escáner TMDb   │
+ │             MediaWatch Core Engine (pacotegg/mediawatch)     │
+ │        Fastify API Server · Streaming Transcoder · TMDb      │
  └──────┬───────────────────────┼───────────────────────┬───────┘
-        │ sirve a               │ sirve a               │ sirve a
+        │ serves                │ serves                │ serves
         ▼                       ▼                       ▼
  ┌──────────────┐        ┌──────────────┐        ┌──────────────┐
- │  Web Client  │        │  App Android │        │   Smart TV   │
+ │  Web Client  │        │  Android App │        │   Smart TV   │
  │   React 19   │        │ Native Media3│        │ Samsung Tizen│
  └──────────────┘        └──────────────┘        └──────────────┘
 ```
 
-- **[MediaWatch Core](https://github.com/pacotegg/mediawatch)** es el corazón del proyecto: donde se desarrolla el servidor central, el reproductor web, la app de Android y la app de la tele.
-- **MediaWatch Server** (este repositorio) empaqueta ese motor en una aplicación de escritorio para Windows con instalador `.exe`, para que cualquiera pueda ejecutar su propio servidor sin conocimientos técnicos.
+- **[MediaWatch Core](https://github.com/pacotegg/mediawatch)**: The central open-source engine powering the Fastify backend, web application, Samsung Tizen Smart TV app, and native Android client.
+- **MediaWatch Server** (this repo): Packages the core engine into a standalone desktop application with native system installers, bundled FFmpeg binaries, and an intuitive graphical setup interface.
 
 ---
 
-## Cómo organizar tus carpetas
+## Organizing Your Media Files
 
-MediaWatch Server reconoce tus películas y series por su **nombre y año**. Para garantizar la máxima precisión en las carátulas y sinopsis automáticas, recomendamos la convención estándar:
+MediaWatch Server automatically matches movies and shows using their **title and release year**. For optimal scraping accuracy, standard naming conventions are recommended:
 
 ```text
-Películas\Blade Runner (1982)\Blade Runner (1982).mkv
-Películas\The Matrix (1999)\The Matrix (1999).mkv
-Series\Breaking Bad (2008)\Season 01\Breaking Bad - S01E01.mkv
-Series\Friends (1994)\Season 01\Friends - S01E01.mkv
+Movies\Blade Runner (1982)\Blade Runner (1982).mkv
+Movies\The Matrix (1999)\The Matrix (1999).mkv
+Shows\Breaking Bad (2008)\Season 01\Breaking Bad - S01E01.mkv
+Shows\Friends (1994)\Season 01\Friends - S01E01.mkv
 ```
 
-> **Consejo**: Si tus archivos tienen nombres de release como `The.Matrix.1999.1080p.BluRay.x264-GRP`, el escáner intentará limpiarlos de forma inteligente. Si algún título queda dudoso, aparecerá en el panel de **Ajustes &rarr; Metadatos &rarr; Pendientes de revisión** para que elijas la ficha correcta con un solo clic.
+> **Tip**: If your filenames include scene tags such as `The.Matrix.1999.1080p.BluRay.x264-GRP`, the scanner cleans them automatically. Any ambiguous matches will be queued under **Settings &rarr; Metadata &rarr; Pending Review** so you can pick the exact match with a single click.
 
 ---
 
-## Opciones desde la bandeja del sistema
+## System Tray Quick Controls
 
-Al hacer clic derecho sobre el icono de MediaWatch Server junto al reloj de Windows:
-1. **Abrir MediaWatch**: Abre la interfaz en tu navegador predeterminado (`http://localhost:8730`).
-2. **Copiar enlace local**: Copia la dirección IP local de tu ordenador (por ejemplo `http://192.168.1.50:8730`) para pegarla en la app del móvil o Smart TV.
-3. **Iniciar automáticamente con Windows**: Activa o desactiva el arranque del servidor al iniciar sesión.
-4. **Abrir carpeta de datos y registros**: Acceso directo a `%APPDATA%\MediaWatchServer\data`.
-5. **Reiniciar / Iniciar / Salir**: Control total del servidor sin abrir terminales.
+Right-clicking the MediaWatch Server tray icon provides instant shortcuts:
+1. **Open MediaWatch in Browser**: Launches the web player in your default browser (`http://localhost:8730`).
+2. **Copy Local Network URL**: Copies your local LAN address (e.g. `http://192.168.1.50:8730`) to paste into TV or mobile clients.
+3. **Connect Mobile or Tablet (QR Code)**: Displays a popup with a high-contrast QR code for instant phone pairing.
+4. **Start with Windows / System Login**: Toggles automatic startup when you log in.
+5. **Open Data and Logs Folder**: Direct access to `%APPDATA%\MediaWatchServer\data` (or `~/.config/MediaWatchServer/data` on Linux).
+6. **Restart / Start / Quit**: Manage the server process cleanly without opening terminal windows.
 
 ---
 
-## Descarga e instalación
+## Download & Installation
 
 ### Windows
-1. Ve a **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** y descarga `MediaWatch-Server-Setup.exe`.
-2. Ejecuta el archivo descargado.
+1. Head over to **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** and download `MediaWatch-Server-Setup.exe`.
+2. Run the downloaded installer.
 
 > [!NOTE]
-> **Aviso de Windows SmartScreen**:
-> Al tratarse de un proyecto independiente de código abierto sin certificado de firma digital comercial de pago (que tienen costes anuales elevados), Windows puede mostrar la pantalla azul:  
-> *«Windows protegió su PC (SmartScreen de Microsoft Defender)»*.  
+> **Windows SmartScreen Notice**:
+> Because MediaWatch Server is an independent open-source project without a costly commercial code-signing certificate, Windows Defender SmartScreen may display the prompt:  
+> *«Windows protected your PC»*.  
 > 
-> Para continuar con la instalación, simplemente haz clic en **«Más información»** y luego en el botón **«Ejecutar de todas formas»**. El código fuente es 100% auditable y público bajo licencia GNU AGPL v3.
+> To proceed, click **«More info»** and then click the **«Run anyway»** button. The application is completely open-source and auditable under the GNU AGPL v3 license.
 
-3. Sigue los sencillos pasos del asistente de bienvenida para seleccionar las carpetas de tus películas y series. ¡Listo!
+3. Follow the visual setup wizard to select your movie and series folders. Done!
 
 ### Linux
-1. Ve a **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** y descarga el archivo según tu distribución:
-   - **AppImage** (compatible con cualquier distribución moderna):
+1. Head over to **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** and download the package for your distribution:
+   - **AppImage** (universal, works on any modern Linux distribution):
      ```bash
      chmod +x MediaWatch-Server-*.AppImage
      ./MediaWatch-Server-*.AppImage
      ```
-   - **Paquete DEB** (Ubuntu, Debian, Linux Mint):
+   - **DEB Package** (Ubuntu, Debian, Linux Mint):
      ```bash
      sudo dpkg -i mediawatch-server_*_amd64.deb
      ```
-2. La app abrirá el asistente gráfico de primer arranque y se minimizará en la bandeja del sistema.
+2. The app will launch the setup wizard and minimize to your desktop notification area.
 
 ---
 
-## Estructura del repositorio
+## Repository Structure
 
 ```text
 MediaWatch-Server/
-├── app/               # Envoltorio de escritorio Electron
-│   ├── src/           # Proceso principal, System Tray, gestor del servidor e IPC
-│   └── wizard/        # Interfaz del asistente gráfico de primer arranque
-├── assets/            # Iconos y recursos visuales
-├── core/              # Submódulo git -> pacotegg/mediawatch (servidor Fastify y cliente web)
-├── LICENSE            # Licencia GNU AGPL v3.0
-└── package.json       # Configuración y empaquetador electron-builder
+├── app/               # Electron desktop shell
+│   ├── src/           # Main process, system tray, process supervisor & IPC
+│   ├── wizard/        # First-run guided setup wizard HTML/CSS/JS
+│   └── connect/       # Interactive mobile pairing QR code window
+├── assets/            # App icons and graphics
+├── core/              # Git submodule -> pacotegg/mediawatch (Fastify server & React web)
+├── scripts/           # Portable binary preparation tools
+├── LICENSE            # GNU AGPL v3.0 License
+└── package.json       # Electron packaging & electron-builder configuration
 ```
 
 ---
 
-## Desarrollo local y compilación
+## Local Development & Building from Source
 
-### Requisitos previos
-- Windows 10/11
-- [Node.js](https://nodejs.org) v22+ (recomendado v26)
-- Git con submódulos activos:
+### Prerequisites
+- Windows 10/11 or modern Linux distribution (Ubuntu 22.04+)
+- [Node.js](https://nodejs.org) v22+ (v26 recommended)
+- Git with submodule recursion enabled:
   ```bash
   git clone --recurse-submodules https://github.com/pacotegg/MediaWatch-Server.git
   ```
 
-### Instalación y arranque en modo desarrollo
+### Development Setup
 
-1. Instalar dependencias:
-   ```powershell
+1. Install dependencies:
+   ```bash
    npm install
    cd core && npm install && npm run build --workspace web && cd ..
    ```
 
-2. Compilar y arrancar la aplicación:
-   ```powershell
+2. Compile and run in development mode:
+   ```bash
    npm run dev
    ```
 
-3. Generar instalador para Windows (`.exe` NSIS):
-   ```powershell
-   npm run dist
-   ```
-   El instalador se genera en la carpeta `release/`.
+3. Package desktop installer:
+   - For Windows (`.exe` NSIS):
+     ```bash
+     npm run dist
+     ```
+   - For Linux (`.AppImage` & `.deb`):
+     ```bash
+     npm run dist:linux
+     ```
+   Packaged artifacts will be saved in the `release/` directory.
 
 ---
 
-## Licencia
+## License
 
-MediaWatch Server es software libre publicado bajo los términos de la **GNU Affero General Public License v3.0 (AGPLv3)**. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+MediaWatch Server is free and open-source software distributed under the terms of the **GNU Affero General Public License v3.0 (AGPLv3)**. See the [LICENSE](LICENSE) file for complete details.
