@@ -4,6 +4,7 @@
 [![Platform: Windows | Linux](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-0078D6.svg)](https://github.com/pacotegg/MediaWatch-Server/releases)
 [![Electron](https://img.shields.io/badge/Electron-34%2B-47848F.svg)](https://www.electronjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-26%2B-green.svg)](https://nodejs.org/)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/pacotegg)
 
 [English](README.md) · [Español](README.es.md)
 
@@ -156,6 +157,12 @@ Right-clicking the tray icon provides instant shortcuts:
 4. **Start with Windows / System Login**: Toggles automatic launch on system boot.
 5. **Open Data and Logs Folder**: Direct shortcut to `%APPDATA%\MediaWatchServer\data` (or `~/.config/MediaWatchServer/data` on Linux).
 6. **Restart / Start / Quit**: Manage the server process cleanly without terminal windows.
+
+---
+
+## Support the Project
+
+If you enjoy using MediaWatch Server and want to support its ongoing development, you can [buy me a coffee on Ko-fi](https://ko-fi.com/pacotegg). Every contribution is deeply appreciated!
 
 ---
 

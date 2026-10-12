@@ -4,6 +4,7 @@
 [![Plataformas: Windows | Linux](https://img.shields.io/badge/Plataformas-Windows%20%7C%20Linux-0078D6.svg)](https://github.com/pacotegg/MediaWatch-Server/releases)
 [![Electron](https://img.shields.io/badge/Electron-34%2B-47848F.svg)](https://www.electronjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-26%2B-green.svg)](https://nodejs.org/)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Invtame%20a%20un%20caf-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/pacotegg)
 
 [English](README.md) · [Español](README.es.md)
 
@@ -157,6 +158,12 @@ Al hacer clic derecho en el icono de MediaWatch Server junto al reloj:
 4. **Iniciar con Windows / con el sistema**: Activa o desactiva el arranque automático al encender el ordenador.
 5. **Abrir carpeta de datos y registros**: Acceso directo a `%APPDATA%\MediaWatchServer\data` (o `~/.config/MediaWatchServer/data` en Linux).
 6. **Reiniciar / Detener / Salir**: Controla el servidor sin necesidad de abrir una consola de comandos.
+
+---
+
+## Apoya el proyecto
+
+Si disfrutas de MediaWatch Server y quieres echarme una mano con el desarrollo continuo, puedes [invitarme a un café en Ko-fi](https://ko-fi.com/pacotegg). ¡Cualquier aportación se agradece un montón!
 
 ---
 
