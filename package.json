@@ -1,9 +1,9 @@
 {
   "name": "mediawatch-server",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Servidor propio de películas y series todo-en-uno para Windows y Linux",
   "main": "dist-electron/main.js",
-  "author": "Paco Gámiz <francisco.gamiz@gmail.com>",
+  "author": "Paco Gámiz <pacotegg@users.noreply.github.com>",
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "prepare:binaries": "node scripts/prepare-binaries.js",
@@ -36,7 +36,7 @@
       "target": ["AppImage", "deb"],
       "category": "Video",
       "icon": "assets/icon.png",
-      "maintainer": "Paco Gámiz <francisco.gamiz@gmail.com>"
+      "maintainer": "Paco Gámiz <pacotegg@users.noreply.github.com>"
     },
     "nsis": {
       "oneClick": false,
