@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { ServerManager } from './server';
 import { getDataDir, loadConfig, getLocalIP } from './config';
 import { openWizard } from './wizard';
+import { openConnectWindow } from './connect';
 
 let tray: Tray | null = null;
 
@@ -41,6 +42,12 @@ export function createTray(serverManager: ServerManager): Tray {
         label: `Copiar enlace local (${networkUrl})`,
         click: () => {
           clipboard.writeText(networkUrl);
+        },
+      },
+      {
+        label: 'Conectar móvil o tablet (Código QR)...',
+        click: () => {
+          openConnectWindow();
         },
       },
       { type: 'separator' },

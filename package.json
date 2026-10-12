@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
+    "@types/qrcode": "^1.5.6",
     "electron": "^34.2.0",
     "electron-builder": "^25.1.8",
     "typescript": "^5.7.2"
@@ -41,11 +42,22 @@
       {
         "from": "core/server",
         "to": "core/server",
-        "filter": ["**/*", "!**/node_modules/**"]
+        "filter": [
+          "**/*",
+          "!**/node_modules/**"
+        ]
       },
       {
         "from": "core/web/dist",
         "to": "core/web/dist"
+      },
+      {
+        "from": "app/wizard",
+        "to": "app/wizard"
+      },
+      {
+        "from": "app/connect",
+        "to": "app/connect"
       },
       {
         "from": "assets",
@@ -56,5 +68,8 @@
         "to": "bin"
       }
     ]
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4"
   }
 }

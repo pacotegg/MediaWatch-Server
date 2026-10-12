@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Conectar dispositivos</title>
+  <link rel="stylesheet" href="connect.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Conectar tus dispositivos</h2>
+    <p class="subtitle">Asegúrate de que tu móvil o tele esté conectado a la misma red Wi-Fi.</p>
+
+    <div class="qr-wrapper">
+      <img id="qr-img" src="" alt="Código QR de conexión">
+    </div>
+
+    <div class="url-box">
+      <input type="text" id="url-text" readonly value="Cargando...">
+      <button id="copy-btn" class="btn">Copiar</button>
+    </div>
+
+    <div class="instructions">
+      <ol>
+        <li><strong>Móvil / iPad</strong>: Apunta la cámara al código QR para abrir el reproductor en el navegador.</li>
+        <li><strong>App Android / TV</strong>: En la app, introduce la dirección mostrada arriba.</li>
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    const qrImg = document.getElementById('qr-img');
+    const urlText = document.getElementById('url-text');
+    const copyBtn = document.getElementById('copy-btn');
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      if (window.connectApi) {
+        const data = await window.connectApi.getData();
+        if (data.qrDataUrl) {
+          qrImg.src = data.qrDataUrl;
+        }
+        urlText.value = data.url;
+
+        copyBtn.addEventListener('click', async () => {
+          await window.connectApi.copyUrl(data.url);
+          copyBtn.textContent = '¡Copiado!';
+          setTimeout(() => { copyBtn.textContent = 'Copiar'; }, 2000);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -2,6 +2,7 @@ import { app, dialog } from 'electron';
 import { ServerManager } from './server';
 import { createTray } from './tray';
 import { openWizard, registerWizardIpc } from './wizard';
+import { registerConnectIpc } from './connect';
 import { loadConfig } from './config';
 
 const gotTheLock = app.requestSingleInstanceLock();
@@ -21,6 +22,7 @@ if (!gotTheLock) {
 
   app.whenReady().then(async () => {
     registerWizardIpc(serverManager);
+    registerConnectIpc();
     createTray(serverManager);
 
     const config = loadConfig();
