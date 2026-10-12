@@ -1,4 +1,4 @@
-import { BrowserWindow, dialog, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron';
 import { join } from 'node:path';
 import { ServerManager } from './server';
 import { loadConfig, saveConfig } from './config';
@@ -26,7 +26,9 @@ export function openWizard(serverManager: ServerManager): BrowserWindow {
     },
   });
 
-  const wizardHtml = join(__dirname, '../wizard/index.html');
+  const wizardHtml = app.isPackaged
+    ? join(process.resourcesPath, 'app/wizard/index.html')
+    : join(__dirname, '../app/wizard/index.html');
   wizardWindow.loadFile(wizardHtml);
 
   wizardWindow.on('closed', () => {

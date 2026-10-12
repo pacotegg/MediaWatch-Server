@@ -6,9 +6,10 @@
   "author": "Paco Esteban",
   "license": "AGPL-3.0-or-later",
   "scripts": {
+    "prepare:binaries": "node scripts/prepare-binaries.js",
     "build:core": "cd core && npm run build --workspace web",
     "build:electron": "tsc",
-    "build": "npm run build:core && npm run build:electron",
+    "build": "npm run prepare:binaries && npm run build:core && npm run build:electron",
     "dev": "tsc && electron dist-electron/main.js",
     "start": "electron dist-electron/main.js",
     "dist": "npm run build && electron-builder --win"
@@ -49,6 +50,10 @@
       {
         "from": "assets",
         "to": "assets"
+      },
+      {
+        "from": "bin",
+        "to": "bin"
       }
     ]
   }

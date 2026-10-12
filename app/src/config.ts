@@ -36,8 +36,9 @@ export function loadConfig(): AppConfig {
       // Ignorar error de parseo y retornar config por defecto
     }
   }
+  const defaultPort = parseInt(process.env.MEDIAWATCH_PORT || '8730', 10);
   return {
-    port: 8730,
+    port: defaultPort,
     host: '0.0.0.0',
     libraries: [],
   };

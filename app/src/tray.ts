@@ -9,7 +9,9 @@ let tray: Tray | null = null;
 export function createTray(serverManager: ServerManager): Tray {
   if (tray) return tray;
 
-  const iconPath = join(__dirname, '../../assets/icon.png');
+  const iconPath = app.isPackaged
+    ? join(process.resourcesPath, 'assets/icon.png')
+    : join(__dirname, '../assets/icon.png');
   const icon = nativeImage.createFromPath(iconPath);
   tray = new Tray(icon.resize({ width: 16, height: 16 }));
 

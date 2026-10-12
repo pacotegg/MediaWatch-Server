@@ -14,12 +14,23 @@ export class ServerManager {
     if (app.isPackaged) {
       this.corePath = join(process.resourcesPath, 'core');
     } else {
-      this.corePath = join(__dirname, '../../core');
+      this.corePath = join(__dirname, '../core');
     }
   }
 
   public getStatus(): boolean {
     return this.isRunning;
+  }
+
+  private findBinary(name: 'ffmpeg' | 'ffprobe'): string | undefined {
+    const filename = `${name}.exe`;
+    if (app.isPackaged) {
+      const packagedPath = join(process.resourcesPath, 'bin', filename);
+      if (existsSync(packagedPath)) return packagedPath;
+    }
+    const localPath = join(__dirname, '../bin', filename);
+    if (existsSync(localPath)) return localPath;
+    return undefined;
   }
 
   public async start(): Promise<void> {
@@ -34,12 +45,17 @@ export class ServerManager {
     const logStream = createWriteStream(join(dataDir, 'server.log'), { flags: 'a' });
     const errStream = createWriteStream(join(dataDir, 'server.err'), { flags: 'a' });
 
-    const env = {
+    const env: Record<string, string | undefined> = {
       ...process.env,
       MEDIAWATCH_DATA_DIR: dataDir,
       MEDIAWATCH_PORT: String(config.port || 8730),
       MEDIAWATCH_HOST: config.host || '0.0.0.0',
     };
+
+    const bundledFfmpeg = this.findBinary('ffmpeg');
+    const bundledFfprobe = this.findBinary('ffprobe');
+    if (bundledFfmpeg) env.MEDIAWATCH_FFMPEG = bundledFfmpeg;
+    if (bundledFfprobe) env.MEDIAWATCH_FFPROBE = bundledFfprobe;
 
     // Node 26 ejecuta TypeScript directamente sin compilar
     const nodeExecutable = process.execPath.includes('node') ? 'node' : 'node';
