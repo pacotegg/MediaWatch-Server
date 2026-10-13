@@ -99,6 +99,12 @@ document.getElementById('btn-finish')?.addEventListener('click', async () => {
 // Cargar configuración existente si la hubiera
 window.addEventListener('DOMContentLoaded', async () => {
   if (window.wizardApi) {
+    const hwInfo = document.getElementById('hw-info');
+    window.wizardApi.getHardware().then((h) => {
+      hwInfo.textContent = 'Aceleración de vídeo detectada: ' + h.etiqueta + '. Podrás cambiarla después en Ajustes.';
+    }).catch(() => {
+      hwInfo.textContent = '';
+    });
     const cfg = await window.wizardApi.getConfig();
     if (cfg && cfg.libraries) {
       const movieLib = cfg.libraries.find((l) => l.kind === 'movie');

@@ -2,6 +2,7 @@ import { app, BrowserWindow, clipboard, ipcMain } from 'electron';
 import { join } from 'node:path';
 import QRCode from 'qrcode';
 import { loadConfig, getLocalIP } from './config';
+import { endurecerVentana } from './seguridad';
 
 let connectWindow: BrowserWindow | null = null;
 
@@ -30,6 +31,7 @@ export async function openConnectWindow(): Promise<BrowserWindow> {
     ? join(process.resourcesPath, 'app/connect/index.html')
     : join(__dirname, '../app/connect/index.html');
 
+  endurecerVentana(connectWindow);
   connectWindow.loadFile(connectHtml);
 
   connectWindow.on('closed', () => {

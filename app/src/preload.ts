@@ -5,4 +5,5 @@ contextBridge.exposeInMainWorld('wizardApi', {
   getConfig: () => ipcRenderer.invoke('wizard:get-config'),
   saveAndStart: (data: any) => ipcRenderer.invoke('wizard:save-and-start', data),
   openExternal: (url: string) => ipcRenderer.invoke('wizard:open-external', url),
+  getHardware: () => ipcRenderer.invoke('wizard:get-hardware'),
 });

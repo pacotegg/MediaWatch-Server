@@ -1,4 +1,4 @@
-import { Tray, Menu, shell, app, nativeImage, clipboard } from 'electron';
+import { Tray, Menu, shell, app, nativeImage, clipboard, Notification } from 'electron';
 import { join } from 'node:path';
 import { ServerManager } from './server';
 import { getDataDir, loadConfig, getLocalIP } from './config';
@@ -28,7 +28,7 @@ export function createTray(serverManager: ServerManager): Tray {
 
     const contextMenu = Menu.buildFromTemplate([
       {
-        label: isRunning ? '● Servidor activo' : '○ Servidor detenido',
+        label: isRunning ? '● Servidor activo' : serverManager.getGaveUp() ? '⚠ Detenido: demasiados fallos seguidos' : '○ Servidor detenido',
         enabled: false,
       },
       { type: 'separator' },
@@ -55,6 +55,12 @@ export function createTray(serverManager: ServerManager): Tray {
         label: 'Asistente de configuración...',
         click: () => {
           openWizard(serverManager);
+        },
+      },
+      {
+        label: 'Ver registro de errores (server.err)',
+        click: () => {
+          shell.openPath(join(getDataDir(), 'server.err'));
         },
       },
       {
@@ -97,6 +103,20 @@ export function createTray(serverManager: ServerManager): Tray {
     tray?.setContextMenu(contextMenu);
   };
 
+  // Si el servidor se cae varias veces seguidas deja de reiniciarse: hay que avisar, no esperar a que
+  // alguien mire la bandeja y vea «detenido».
+  serverManager.on('gave-up', () => {
+    if (Notification.isSupported()) {
+      const aviso = new Notification({
+        title: 'MediaWatch Server se ha detenido',
+        body: 'El servidor falló varias veces seguidas y no se reinicia más. Pulsa para ver el registro de errores.',
+      });
+      aviso.on('click', () => shell.openPath(join(getDataDir(), 'server.err')));
+      aviso.show();
+    }
+    updateMenu();
+  });
+
   tray.on('double-click', () => {
     const config = loadConfig();
     shell.openExternal(`http://localhost:${config.port || 8730}`);
@@ -109,7 +129,7 @@ export function createTray(serverManager: ServerManager): Tray {
   let ultimoEstado = '';
   setInterval(() => {
     const cfg = loadConfig();
-    const estado = `${serverManager.getStatus()}|${getLocalIP()}|${cfg.port || 8730}`;
+    const estado = `${serverManager.getStatus()}|${serverManager.getGaveUp()}|${getLocalIP()}|${cfg.port || 8730}`;
     if (estado === ultimoEstado) return;
     ultimoEstado = estado;
     updateMenu();

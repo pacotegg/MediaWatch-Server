@@ -1,4 +1,5 @@
 import { spawn, ChildProcess } from 'node:child_process';
+import { EventEmitter } from 'node:events';
 import { join } from 'node:path';
 import { appendFileSync, closeSync, existsSync, openSync, renameSync, statSync } from 'node:fs';
 import { app } from 'electron';
@@ -26,14 +27,16 @@ function rotarSiGrande(fichero: string): void {
   }
 }
 
-export class ServerManager {
+export class ServerManager extends EventEmitter {
   private process: ChildProcess | null = null;
   private isRunning: boolean = false;
   private corePath: string;
   private stopping: boolean = false;
+  private gaveUp: boolean = false;
   private restartTimes: number[] = [];
 
   constructor() {
+    super();
     // Si estamos empaquetados en Electron, los recursos están en process.resourcesPath
     if (app.isPackaged) {
       this.corePath = join(process.resourcesPath, 'core');
@@ -44,6 +47,15 @@ export class ServerManager {
 
   public getStatus(): boolean {
     return this.isRunning;
+  }
+
+  /** true si el servidor se cayó tantas veces seguidas que ya no se reinicia solo. */
+  public getGaveUp(): boolean {
+    return this.gaveUp;
+  }
+
+  public getFfmpegPath(): string | undefined {
+    return this.findBinary('ffmpeg');
   }
 
   private findBinary(name: 'node' | 'ffmpeg' | 'ffprobe'): string | undefined {
@@ -89,6 +101,7 @@ export class ServerManager {
     const nodeExecutable = this.findBinary('node') ?? 'node';
 
     this.stopping = false;
+    this.gaveUp = false;
     let logFd = -1;
     let errFd = -1;
     try {
@@ -135,6 +148,8 @@ export class ServerManager {
     this.restartTimes = this.restartTimes.filter((t) => ahora - t < 5 * 60 * 1000);
     if (this.restartTimes.length >= 5) {
       anotar(errFile, '[Electron ServerManager] Demasiadas caídas seguidas: no se reinicia más. Revisa server.err.\n');
+      this.gaveUp = true;
+      this.emit('gave-up');
       return;
     }
     this.restartTimes.push(ahora);

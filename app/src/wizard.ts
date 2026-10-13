@@ -2,6 +2,8 @@ import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron';
 import { join } from 'node:path';
 import { ServerManager } from './server';
 import { loadConfig, saveConfig } from './config';
+import { endurecerVentana } from './seguridad';
+import { detectarAceleracion, ETIQUETA_ACELERACION, type Aceleracion } from './hardware';
 
 let wizardWindow: BrowserWindow | null = null;
 
@@ -29,6 +31,7 @@ export function openWizard(serverManager: ServerManager): BrowserWindow {
   const wizardHtml = app.isPackaged
     ? join(process.resourcesPath, 'app/wizard/index.html')
     : join(__dirname, '../app/wizard/index.html');
+  endurecerVentana(wizardWindow);
   wizardWindow.loadFile(wizardHtml);
 
   wizardWindow.on('closed', () => {
@@ -39,6 +42,15 @@ export function openWizard(serverManager: ServerManager): BrowserWindow {
 }
 
 export function registerWizardIpc(serverManager: ServerManager): void {
+  // Se detecta una sola vez y solo si el asistente llega a abrirse (son unos segundos de ffmpeg).
+  let deteccion: Promise<Aceleracion> | null = null;
+  const detectar = () => (deteccion ??= detectarAceleracion(serverManager.getFfmpegPath()));
+
+  ipcMain.handle('wizard:get-hardware', async () => {
+    const hw = await detectar();
+    return { hwaccel: hw, etiqueta: ETIQUETA_ACELERACION[hw] };
+  });
+
   ipcMain.handle('wizard:select-folder', async () => {
     if (!wizardWindow) return null;
     const result = await dialog.showOpenDialog(wizardWindow, {
@@ -68,6 +80,8 @@ export function registerWizardIpc(serverManager: ServerManager): void {
     }
     const current = loadConfig();
     current.libraries = data.libraries;
+    // Solo la primera vez: si ya hay un valor (el usuario lo cambió en Ajustes), no se toca.
+    if (current.hwaccel === undefined) current.hwaccel = await detectar();
     if (data.tmdbApiKey) current.tmdbApiKey = data.tmdbApiKey;
     if (data.port) current.port = data.port;
     saveConfig(current);

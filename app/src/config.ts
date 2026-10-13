@@ -12,6 +12,8 @@ export interface AppConfig {
     kind: 'movie' | 'show';
   }>;
   tmdbApiKey?: string;
+  /** Lo detecta el asistente la primera vez; el servidor lo lee del mismo config.json. */
+  hwaccel?: string;
 }
 
 export function getDataDir(): string {
