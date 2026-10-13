@@ -28,7 +28,8 @@
       {
         "provider": "github",
         "owner": "pacotegg",
-        "repo": "MediaWatch-Server"
+        "repo": "MediaWatch-Server",
+        "releaseType": "release"
       }
     ],
     "productName": "MediaWatch Server",

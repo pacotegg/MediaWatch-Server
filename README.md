@@ -104,7 +104,7 @@ MediaWatch Server supports GPU-accelerated transcoding in both **H.264** and **H
 ## Download & Installation
 
 ### Windows
-1. Go to **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** and download `MediaWatch-Server-Setup-<version>.exe` (for example `MediaWatch-Server-Setup-1.1.5.exe`). Node.js and FFmpeg are included: nothing else to install.
+1. Go to **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** and download the Windows installer (`.exe`). Node.js and FFmpeg are included: nothing else to install.
 2. Run the installer and follow the setup wizard. It detects your GPU (NVIDIA, Intel or AMD) for video conversion.
 3. **Firewall:** if you choose *«Anyone who uses this computer»*, the installer adds a Windows Firewall rule that only lets in devices from your **local network**. With a per-user install, Windows asks the first time the server starts: click **Allow** (private networks) or your phone and TV will not reach it.
 

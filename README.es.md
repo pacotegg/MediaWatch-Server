@@ -104,7 +104,7 @@ MediaWatch Server soporta aceleración gráfica tanto en **H.264** como en **HEV
 ## Descarga e Instalación
 
 ### Windows
-1. Ve a **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** y descarga `MediaWatch-Server-Setup-<versión>.exe` (por ejemplo `MediaWatch-Server-Setup-1.1.5.exe`). Lleva Node.js y FFmpeg dentro: no hay que instalar nada más.
+1. Ve a **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** y descarga el instalador de Windows (`.exe`). Lleva Node.js y FFmpeg dentro: no hay que instalar nada más.
 2. Ejecuta el instalador y sigue el asistente. Detecta tu tarjeta gráfica (NVIDIA, Intel o AMD) para convertir vídeo.
 3. **Cortafuegos:** si eliges *«Para todos los usuarios de este equipo»*, el instalador crea una regla del cortafuegos de Windows que solo deja entrar a los aparatos de tu **red local**. Si instalas solo para ti, Windows pregunta la primera vez que arranca el servidor: pulsa **Permitir** (redes privadas) o el móvil y la tele no llegarán.
 

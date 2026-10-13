@@ -144,7 +144,6 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: release/*.exe
           draft: false
           prerelease: false
           generate_release_notes: true
@@ -199,9 +198,6 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            release/*.AppImage
-            release/*.deb
           draft: false
           prerelease: false
           generate_release_notes: true
