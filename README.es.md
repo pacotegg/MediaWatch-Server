@@ -3,7 +3,7 @@
 [![Licencia: AGPL v3](https://img.shields.io/badge/Licencia-AGPLv3-blue.svg)](LICENSE)
 [![Plataformas: Windows | Linux](https://img.shields.io/badge/Plataformas-Windows%20%7C%20Linux-0078D6.svg)](https://github.com/pacotegg/MediaWatch-Server/releases)
 [![Electron](https://img.shields.io/badge/Electron-34%2B-47848F.svg)](https://www.electronjs.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-26%2B-green.svg)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js_26-incluido-green.svg)](https://nodejs.org/)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Invtame%20a%20un%20caf-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/pacotegg)
 
 [English](README.md) · [Español](README.es.md)
@@ -104,8 +104,12 @@ MediaWatch Server soporta aceleración gráfica tanto en **H.264** como en **HEV
 ## Descarga e Instalación
 
 ### Windows
-1. Ve a **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** y descarga `MediaWatch-Server-Setup-<versión>.exe` (por ejemplo `MediaWatch-Server-Setup-1.1.3.exe`).
-2. Ejecuta el instalador y sigue el asistente.
+1. Ve a **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** y descarga `MediaWatch-Server-Setup-<versión>.exe` (por ejemplo `MediaWatch-Server-Setup-1.1.5.exe`). Lleva Node.js y FFmpeg dentro: no hay que instalar nada más.
+2. Ejecuta el instalador y sigue el asistente. Detecta tu tarjeta gráfica (NVIDIA, Intel o AMD) para convertir vídeo.
+3. **Cortafuegos:** si eliges *«Para todos los usuarios de este equipo»*, el instalador crea una regla del cortafuegos de Windows que solo deja entrar a los aparatos de tu **red local**. Si instalas solo para ti, Windows pregunta la primera vez que arranca el servidor: pulsa **Permitir** (redes privadas) o el móvil y la tele no llegarán.
+
+> [!TIP]
+> **Actualización automática (desde la v1.1.5):** la app mira las releases de GitHub al arrancar y cada 6 horas, descarga la versión nueva en segundo plano y la instala al salir (o en el momento, desde el icono de la bandeja). Hasta la 1.1.4 no hay actualizador: instala la 1.1.5 a mano una vez.
 
 > [!NOTE]
 > **Aviso de Windows Defender SmartScreen**:  

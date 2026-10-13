@@ -3,7 +3,7 @@
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](LICENSE)
 [![Platform: Windows | Linux](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-0078D6.svg)](https://github.com/pacotegg/MediaWatch-Server/releases)
 [![Electron](https://img.shields.io/badge/Electron-34%2B-47848F.svg)](https://www.electronjs.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-26%2B-green.svg)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js_26-bundled-green.svg)](https://nodejs.org/)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/pacotegg)
 
 [English](README.md) · [Español](README.es.md)
@@ -104,8 +104,12 @@ MediaWatch Server supports GPU-accelerated transcoding in both **H.264** and **H
 ## Download & Installation
 
 ### Windows
-1. Go to **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** and download `MediaWatch-Server-Setup-<version>.exe` (for example `MediaWatch-Server-Setup-1.1.3.exe`).
-2. Run the installer and follow the 3-step setup wizard.
+1. Go to **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** and download `MediaWatch-Server-Setup-<version>.exe` (for example `MediaWatch-Server-Setup-1.1.5.exe`). Node.js and FFmpeg are included: nothing else to install.
+2. Run the installer and follow the setup wizard. It detects your GPU (NVIDIA, Intel or AMD) for video conversion.
+3. **Firewall:** if you choose *«Anyone who uses this computer»*, the installer adds a Windows Firewall rule that only lets in devices from your **local network**. With a per-user install, Windows asks the first time the server starts: click **Allow** (private networks) or your phone and TV will not reach it.
+
+> [!TIP]
+> **Automatic updates (from v1.1.5):** the app checks GitHub releases on startup and every 6 hours, downloads new versions in the background and installs them when you quit (or right away from the tray icon). Versions up to 1.1.4 have no updater: install 1.1.5 manually once.
 
 > [!NOTE]
 > **Windows SmartScreen Notice**:  
