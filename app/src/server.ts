@@ -8,6 +8,8 @@ export class ServerManager {
   private process: ChildProcess | null = null;
   private isRunning: boolean = false;
   private corePath: string;
+  private stopping: boolean = false;
+  private restartTimes: number[] = [];
 
   constructor() {
     // Si estamos empaquetados en Electron, los recursos están en process.resourcesPath
@@ -22,7 +24,7 @@ export class ServerManager {
     return this.isRunning;
   }
 
-  private findBinary(name: 'ffmpeg' | 'ffprobe'): string | undefined {
+  private findBinary(name: 'node' | 'ffmpeg' | 'ffprobe'): string | undefined {
     const ext = process.platform === 'win32' ? '.exe' : '';
     const filename = `${name}${ext}`;
     if (app.isPackaged) {
@@ -58,29 +60,36 @@ export class ServerManager {
     if (bundledFfmpeg) env.MEDIAWATCH_FFMPEG = bundledFfmpeg;
     if (bundledFfprobe) env.MEDIAWATCH_FFPROBE = bundledFfprobe;
 
-    // Node 26 ejecuta TypeScript directamente sin compilar
-    const nodeExecutable = process.execPath.includes('node') ? 'node' : 'node';
+    // El servidor necesita node:sqlite y ejecuta TypeScript sin compilar: el Node de Electron
+    // (20.x) no vale. Se usa el que va empaquetado en bin/; 'node' del PATH solo como respaldo.
+    const nodeExecutable = this.findBinary('node') ?? 'node';
 
+    this.stopping = false;
     try {
-      this.process = spawn(nodeExecutable, [serverScript], {
+      const child = spawn(nodeExecutable, [serverScript], {
         cwd: join(this.corePath, 'server'),
         env,
         stdio: ['ignore', 'pipe', 'pipe'],
         windowsHide: true,
       });
 
-      this.process.stdout?.pipe(logStream);
-      this.process.stderr?.pipe(errStream);
+      this.process = child;
 
-      this.process.on('error', (err) => {
+      child.stdout?.pipe(logStream);
+      child.stderr?.pipe(errStream);
+
+      child.on('error', (err) => {
         errStream.write(`[Electron ServerManager] Error al lanzar proceso: ${err.message}\n`);
-        this.isRunning = false;
+        if (this.process === child) this.isRunning = false;
       });
 
-      this.process.on('exit', (code, signal) => {
+      child.on('exit', (code, signal) => {
         logStream.write(`[Electron ServerManager] Proceso terminado con código ${code}, señal ${signal}\n`);
+        // Un reinicio manual ya ha arrancado otro proceso: este aviso llega tarde y no le toca.
+        if (this.process !== child) return;
         this.isRunning = false;
         this.process = null;
+        if (!this.stopping) this.scheduleRestart(errStream);
       });
 
       this.isRunning = true;
@@ -90,7 +99,23 @@ export class ServerManager {
     }
   }
 
+  // Si el servidor se cae solo, se vuelve a levantar a los 3 s; con más de 5 caídas en
+  // 5 minutos se deja parado para no entrar en un bucle (el motivo queda en server.err).
+  private scheduleRestart(errStream: NodeJS.WritableStream): void {
+    const ahora = Date.now();
+    this.restartTimes = this.restartTimes.filter((t) => ahora - t < 5 * 60 * 1000);
+    if (this.restartTimes.length >= 5) {
+      errStream.write('[Electron ServerManager] Demasiadas caídas seguidas: no se reinicia más. Revisa server.err.\n');
+      return;
+    }
+    this.restartTimes.push(ahora);
+    setTimeout(() => {
+      if (!this.stopping && !this.process) void this.start();
+    }, 3000);
+  }
+
   public async stop(): Promise<void> {
+    this.stopping = true;
     if (this.process) {
       this.process.kill('SIGINT');
       this.process = null;

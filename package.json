@@ -6,7 +6,7 @@
   "author": "Paco Gámiz <pacotegg@users.noreply.github.com>",
   "license": "AGPL-3.0-or-later",
   "scripts": {
-    "prepare:binaries": "node scripts/prepare-binaries.js",
+    "prepare:binaries": "node scripts/prepare-binaries.js && node scripts/prepare-node.js && node scripts/prepare-server-deps.js",
     "build:core": "cd core && npm run build --workspace web",
     "build:electron": "tsc",
     "build": "npm run prepare:binaries && npm run build:core && npm run build:electron",
@@ -53,6 +53,10 @@
           "**/*",
           "!**/node_modules/**"
         ]
+      },
+      {
+        "from": "build/server-deps/node_modules",
+        "to": "core/node_modules"
       },
       {
         "from": "core/web/dist",

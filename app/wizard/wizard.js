@@ -64,7 +64,7 @@ document.querySelectorAll('.browse-btn').forEach((btn) => {
 // Enlace externo de TMDb
 document.getElementById('link-tmdb')?.addEventListener('click', (e) => {
   e.preventDefault();
-  // Se abre a través de shell si fuera necesario
+  window.wizardApi?.openExternal(e.currentTarget.href);
 });
 
 // Guardar y arrancar
@@ -87,7 +87,12 @@ document.getElementById('btn-finish')?.addEventListener('click', async () => {
   };
 
   if (window.wizardApi) {
-    await window.wizardApi.saveAndStart(payload);
+    const resultado = await window.wizardApi.saveAndStart(payload);
+    if (resultado && !resultado.success) {
+      finishBtn.disabled = false;
+      finishBtn.textContent = 'Iniciar Servidor \u2192';
+      alert(resultado.error || 'No se pudo iniciar el servidor.');
+    }
   }
 });
 

@@ -49,14 +49,22 @@ export function saveConfig(cfg: AppConfig): void {
   writeFileSync(file, JSON.stringify(cfg, null, 2), 'utf8');
 }
 
+// WSL, Docker, Hyper-V, VirtualBox/VMware y VPN (Tailscale, ZeroTier) crean interfaces con IPs
+// que el móvil no alcanza; el QR y el enlace tienen que llevar la de la red doméstica.
+const INTERFAZ_VIRTUAL = /vethernet|wsl|docker|hyper-v|virtualbox|vmware|vbox|tailscale|zerotier|loopback|podman|^veth|^br-|^virbr|^tun|^tap|^utun/i;
+
 export function getLocalIP(): string {
-  const interfaces = os.networkInterfaces();
-  for (const name of Object.keys(interfaces)) {
-    for (const iface of interfaces[name] || []) {
-      if (iface.family === 'IPv4' && !iface.internal) {
-        return iface.address;
-      }
+  const candidatas: Array<{ ip: string; puntos: number }> = [];
+  let cualquiera: string | undefined;
+  for (const [name, lista] of Object.entries(os.networkInterfaces())) {
+    for (const iface of lista || []) {
+      if (iface.family !== 'IPv4' || iface.internal || iface.address.startsWith('169.254.')) continue;
+      cualquiera ??= iface.address;
+      if (INTERFAZ_VIRTUAL.test(name)) continue;
+      const puntos = iface.address.startsWith('192.168.') ? 3 : iface.address.startsWith('10.') ? 2 : 1;
+      candidatas.push({ ip: iface.address, puntos });
     }
   }
-  return 'localhost';
+  candidatas.sort((a, b) => b.puntos - a.puntos);
+  return candidatas[0]?.ip ?? cualquiera ?? 'localhost';
 }

@@ -22,10 +22,10 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Setup Node.js 22.x
+      - name: Setup Node.js 26.x
         uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: 26.x
           cache: 'npm'
 
       - name: Install dependencies (root)
@@ -81,10 +81,10 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Setup Node.js 22.x
+      - name: Setup Node.js 26.x
         uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: 26.x
           cache: 'npm'
 
       - name: Install dependencies (root)

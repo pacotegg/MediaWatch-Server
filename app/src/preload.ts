@@ -4,4 +4,5 @@ contextBridge.exposeInMainWorld('wizardApi', {
   selectFolder: () => ipcRenderer.invoke('wizard:select-folder'),
   getConfig: () => ipcRenderer.invoke('wizard:get-config'),
   saveAndStart: (data: any) => ipcRenderer.invoke('wizard:save-and-start', data),
+  openExternal: (url: string) => ipcRenderer.invoke('wizard:open-external', url),
 });

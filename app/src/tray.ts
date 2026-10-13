@@ -64,7 +64,7 @@ export function createTray(serverManager: ServerManager): Tray {
         },
       },
       {
-        label: 'Iniciar automáticamente con Windows',
+        label: process.platform === 'win32' ? 'Iniciar automáticamente con Windows' : 'Iniciar automáticamente con el sistema',
         type: 'checkbox',
         checked: app.getLoginItemSettings().openAtLogin,
         click: (item) => {
@@ -104,8 +104,16 @@ export function createTray(serverManager: ServerManager): Tray {
 
   updateMenu();
 
-  // Actualizar periódicamente el estado
-  setInterval(updateMenu, 3000);
+  // Actualizar el estado, pero solo reconstruir el menú si algo ha cambiado: hacerlo cada 3 s
+  // cerraba el menú mientras el usuario lo tenía abierto.
+  let ultimoEstado = '';
+  setInterval(() => {
+    const cfg = loadConfig();
+    const estado = `${serverManager.getStatus()}|${getLocalIP()}|${cfg.port || 8730}`;
+    if (estado === ultimoEstado) return;
+    ultimoEstado = estado;
+    updateMenu();
+  }, 3000);
 
   return tray;
 }

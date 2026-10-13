@@ -51,11 +51,21 @@ export function registerWizardIpc(serverManager: ServerManager): void {
     return result.filePaths[0];
   });
 
+  ipcMain.handle('wizard:open-external', async (_event, url: string) => {
+    // Solo el enlace de la clave de TMDb del propio asistente; nada que llegue de fuera.
+    if (url !== 'https://www.themoviedb.org/settings/api') return false;
+    await shell.openExternal(url);
+    return true;
+  });
+
   ipcMain.handle('wizard:get-config', () => {
     return loadConfig();
   });
 
   ipcMain.handle('wizard:save-and-start', async (_event, data: { libraries: Array<{ name: string; path: string; kind: 'movie' | 'show' }>; tmdbApiKey?: string; port?: number }) => {
+    if (data.port !== undefined && (!Number.isInteger(data.port) || data.port < 1024 || data.port > 65535)) {
+      return { success: false, error: 'El puerto tiene que ser un número entre 1024 y 65535.' };
+    }
     const current = loadConfig();
     current.libraries = data.libraries;
     if (data.tmdbApiKey) current.tmdbApiKey = data.tmdbApiKey;
@@ -63,7 +73,11 @@ export function registerWizardIpc(serverManager: ServerManager): void {
     saveConfig(current);
 
     await serverManager.restart();
-    const ready = await serverManager.waitForReady();
+    // La primera vez el servidor crea la base de datos antes de responder: 30 s de margen.
+    const ready = await serverManager.waitForReady(60, 500);
+    if (!ready) {
+      return { success: false, error: 'El servidor no ha arrancado. Revisa server.err en la carpeta de datos (menú de la bandeja).' };
+    }
 
     if (wizardWindow) {
       wizardWindow.close();
@@ -73,6 +87,6 @@ export function registerWizardIpc(serverManager: ServerManager): void {
     const port = current.port || 8730;
     shell.openExternal(`http://localhost:${port}`);
 
-    return { success: ready };
+    return { success: true };
   });
 }

@@ -1,4 +1,4 @@
-import { app, dialog } from 'electron';
+import { app, dialog, shell } from 'electron';
 import { ServerManager } from './server';
 import { createTray } from './tray';
 import { openWizard, registerWizardIpc } from './wizard';
@@ -17,6 +17,8 @@ if (!gotTheLock) {
     const config = loadConfig();
     if (config.libraries.length === 0) {
       openWizard(serverManager);
+    } else {
+      shell.openExternal(`http://localhost:${config.port || 8730}`);
     }
   });
 
