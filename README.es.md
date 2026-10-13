@@ -104,7 +104,7 @@ MediaWatch Server soporta aceleración gráfica tanto en **H.264** como en **HEV
 ## Descarga e Instalación
 
 ### Windows
-1. Ve a **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** y descarga `MediaWatch-Server-Setup.exe`.
+1. Ve a **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** y descarga `MediaWatch-Server-Setup-<versión>.exe` (por ejemplo `MediaWatch-Server-Setup-1.1.3.exe`).
 2. Ejecuta el instalador y sigue el asistente.
 
 > [!NOTE]
@@ -172,3 +172,12 @@ Si disfrutas de MediaWatch Server y quieres echarme una mano con el desarrollo c
 ## Licencia
 
 MediaWatch Server está publicado bajo la licencia **GNU Affero General Public License v3.0 (AGPLv3)**. Consulta el fichero [LICENSE](LICENSE) para más detalles.
+
+### Software de terceros incluido
+
+Los instaladores incluyen, sin modificar:
+
+- **Núcleo de Media Watch** ([pacotegg/mediawatch](https://github.com/pacotegg/mediawatch)), el motor que envuelve esta app. Declara **GPL-3.0-or-later**; su código fuente completo está en ese repositorio.
+- **FFmpeg 9.0.2, build «essentials»** de [gyan.dev](https://www.gyan.dev/ffmpeg/builds/) (GPL v3, con libx264 y libx265). Release: <https://github.com/GyanD/codexffmpeg/releases/tag/9.0.2>. Código fuente de FFmpeg para esa build: <https://github.com/FFmpeg/FFmpeg/commit/946fcce07b>. La build está fijada por versión y SHA-256 en `.github/workflows/build.yml`.
+- **Node.js 26.4.0** (licencia MIT), descargado de nodejs.org y verificado con su checksum publicado.
+- **Electron** (licencia MIT).

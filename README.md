@@ -104,7 +104,7 @@ MediaWatch Server supports GPU-accelerated transcoding in both **H.264** and **H
 ## Download & Installation
 
 ### Windows
-1. Go to **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** and download `MediaWatch-Server-Setup.exe`.
+1. Go to **[Releases](https://github.com/pacotegg/MediaWatch-Server/releases/latest)** and download `MediaWatch-Server-Setup-<version>.exe` (for example `MediaWatch-Server-Setup-1.1.3.exe`).
 2. Run the installer and follow the 3-step setup wizard.
 
 > [!NOTE]
@@ -171,3 +171,12 @@ If you enjoy using MediaWatch Server and want to support its ongoing development
 ## License
 
 MediaWatch Server is licensed under the **GNU Affero General Public License v3.0 (AGPLv3)**. See [LICENSE](LICENSE) for details.
+
+### Bundled third-party software
+
+The installers include, unmodified:
+
+- **Media Watch core** ([pacotegg/mediawatch](https://github.com/pacotegg/mediawatch)), the engine this app wraps. It declares **GPL-3.0-or-later**; its full source is in that repository.
+- **FFmpeg 9.0.2 "essentials" build** by [gyan.dev](https://www.gyan.dev/ffmpeg/builds/) (GPL v3, includes libx264 and libx265). Release: <https://github.com/GyanD/codexffmpeg/releases/tag/9.0.2>. FFmpeg source for that build: <https://github.com/FFmpeg/FFmpeg/commit/946fcce07b>. The build is pinned by version and SHA-256 in `.github/workflows/build.yml`.
+- **Node.js 26.4.0** (MIT license), downloaded from nodejs.org and verified against its published checksum.
+- **Electron** (MIT license).

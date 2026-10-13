@@ -34,13 +34,24 @@ jobs:
       - name: Install dependencies (core)
         run: npm --prefix core ci
 
-      - name: Download portable FFmpeg for Windows
+      - name: Type-check web client
+        working-directory: core/web
+        run: npx tsc --noEmit
+
+      # FFmpeg fijado: version concreta + SHA256 (el que publica GitHub para ese fichero).
+      # Build "essentials" de gyan.dev (GPL v3, con libx264/libx265, QSV, NVENC y AMF).
+      # Para subir de version: cambiar $version y $sha256 (gh api repos/GyanD/codexffmpeg/releases/tags/<ver>).
+      - name: Download portable FFmpeg for Windows (pinned)
         shell: pwsh
         run: |
+          $version = "9.0.2"
+          $sha256 = "60f467265b1e312373dbcd92200c2618a74850f98d3d078e94296bb3fa2047ba"
           New-Item -ItemType Directory -Path bin -Force | Out-Null
-          $url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip"
-          Write-Host "Descargando FFmpeg portable..."
+          $url = "https://github.com/GyanD/codexffmpeg/releases/download/$version/ffmpeg-$version-essentials_build.zip"
+          Write-Host "Descargando FFmpeg $version..."
           Invoke-WebRequest -Uri $url -OutFile ffmpeg.zip
+          $real = (Get-FileHash ffmpeg.zip -Algorithm SHA256).Hash.ToLower()
+          if ($real -ne $sha256) { throw "Checksum de FFmpeg no coincide: esperado $sha256, obtenido $real" }
           Expand-Archive -Path ffmpeg.zip -DestinationPath ffmpeg_temp -Force
           $extractedDir = Get-ChildItem -Directory ffmpeg_temp | Select-Object -First 1
           Copy-Item "$($extractedDir.FullName)\bin\ffmpeg.exe" bin\ffmpeg.exe -Force
@@ -55,6 +66,29 @@ jobs:
         run: npx electron-builder --win nsis
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Comprueba el servidor EMPAQUETADO como lo veria un PC sin Node: con su node.exe y sin Node
+      # en el PATH. Es la prueba que habria cazado "Cannot find package 'fastify'".
+      - name: Smoke test packaged server (no Node in PATH)
+        shell: pwsh
+        run: |
+          $res = (Resolve-Path "release/win-unpacked/resources").Path
+          $env:MEDIAWATCH_DATA_DIR = Join-Path $env:RUNNER_TEMP "mw-smoke"
+          $env:MEDIAWATCH_PORT = "8731"
+          $env:MEDIAWATCH_HOST = "127.0.0.1"
+          $env:PATH = "$env:SystemRoot\System32"
+          if (Get-Command node -ErrorAction SilentlyContinue) { throw "node sigue en el PATH: la prueba no sirve" }
+          & "$res\bin\ffmpeg.exe" -hide_banner -version | Select-Object -First 1
+          $out = Join-Path $env:RUNNER_TEMP "smoke.out"; $err = Join-Path $env:RUNNER_TEMP "smoke.err"
+          $p = Start-Process -FilePath "$res\bin\node.exe" -ArgumentList "src/index.ts" -WorkingDirectory "$res\core\server" -PassThru -WindowStyle Hidden -RedirectStandardOutput $out -RedirectStandardError $err
+          $ok = $false
+          for ($i = 0; $i -lt 40 -and -not $ok; $i++) {
+            Start-Sleep -Milliseconds 500
+            try { $ok = (Invoke-RestMethod "http://127.0.0.1:8731/api/salud").ok -eq $true } catch {}
+          }
+          Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+          if (-not $ok) { Write-Host "--- stderr ---"; Get-Content $err -ErrorAction SilentlyContinue; throw "El servidor empaquetado no respondio en /api/salud" }
+          Write-Host "Servidor empaquetado OK"
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
