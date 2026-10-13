@@ -90,6 +90,48 @@ jobs:
           if (-not $ok) { Write-Host "--- stderr ---"; Get-Content $err -ErrorAction SilentlyContinue; throw "El servidor empaquetado no respondio en /api/salud" }
           Write-Host "Servidor empaquetado OK"
 
+      # Instala de verdad el .exe (silencioso, «para todos los usuarios»: el runner es administrador) y
+      # comprueba lo que el instalador hace: ficheros, regla del cortafuegos, servidor arrancable desde
+      # la carpeta instalada sin Node en el PATH, y desinstalacion limpia.
+      - name: Install the real installer, check, uninstall
+        shell: pwsh
+        run: |
+          $setup = (Get-ChildItem release -Filter '*Setup*.exe' | Select-Object -First 1).FullName
+          if (-not $setup) { throw "No hay instalador en release/" }
+          $dir = Join-Path $env:RUNNER_TEMP "MWS-instalado"
+          Write-Host "Instalando $setup en $dir"
+          Start-Process -FilePath $setup -ArgumentList "/S", "/allusers", "/D=$dir" -Wait
+          $res = Join-Path $dir "resources"
+          foreach ($f in @("bin\node.exe", "bin\ffmpeg.exe", "core\server\src\index.ts", "core\node_modules\fastify\package.json", "core\web\dist\index.html")) {
+            if (-not (Test-Path (Join-Path $res $f))) { throw "Falta en la instalacion: $f" }
+          }
+          netsh advfirewall firewall show rule name="MediaWatch Server" | Out-Null
+          if ($LASTEXITCODE -ne 0) { throw "El instalador no creo la regla del cortafuegos" }
+          Write-Host "Regla del cortafuegos creada:"
+          netsh advfirewall firewall show rule name="MediaWatch Server" | Select-String "Rule Name|Enabled|Direction|Action|Program|RemoteIP|Profiles"
+
+          $env:MEDIAWATCH_DATA_DIR = Join-Path $env:RUNNER_TEMP "mw-instalado-datos"
+          $env:MEDIAWATCH_PORT = "8732"
+          $env:MEDIAWATCH_HOST = "127.0.0.1"
+          $env:PATH = "$env:SystemRoot\System32"
+          $err = Join-Path $env:RUNNER_TEMP "inst.err"
+          $p = Start-Process -FilePath "$res\bin\node.exe" -ArgumentList "src/index.ts" -WorkingDirectory "$res\core\server" -PassThru -WindowStyle Hidden -RedirectStandardError $err
+          $ok = $false
+          for ($i = 0; $i -lt 40 -and -not $ok; $i++) {
+            Start-Sleep -Milliseconds 500
+            try { $ok = (Invoke-RestMethod "http://127.0.0.1:8732/api/salud").ok -eq $true } catch {}
+          }
+          Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+          if (-not $ok) { Get-Content $err -ErrorAction SilentlyContinue; throw "El servidor instalado no respondio" }
+          Write-Host "Servidor instalado OK"
+
+          $un = Join-Path $dir "Uninstall MediaWatch Server.exe"
+          if (-not (Test-Path $un)) { throw "No hay desinstalador" }
+          Start-Process -FilePath $un -ArgumentList "/S", "/allusers", "_?=$dir" -Wait
+          netsh advfirewall firewall show rule name="MediaWatch Server" | Out-Null
+          if ($LASTEXITCODE -eq 0) { throw "La desinstalacion no quito la regla del cortafuegos" }
+          Write-Host "Desinstalacion OK: la regla del cortafuegos ya no existe"
+
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
