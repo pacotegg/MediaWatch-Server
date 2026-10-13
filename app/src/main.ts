@@ -5,6 +5,7 @@ import { openWizard, registerWizardIpc } from './wizard';
 import { registerConnectIpc } from './connect';
 import { loadConfig } from './config';
 import { endurecerSesion } from './seguridad';
+import { iniciarActualizaciones } from './actualizaciones';
 
 const gotTheLock = app.requestSingleInstanceLock();
 
@@ -28,6 +29,7 @@ if (!gotTheLock) {
     registerWizardIpc(serverManager);
     registerConnectIpc();
     createTray(serverManager);
+    iniciarActualizaciones();
 
     const config = loadConfig();
 

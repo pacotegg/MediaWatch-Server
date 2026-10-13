@@ -131,6 +131,8 @@ jobs:
           netsh advfirewall firewall show rule name="MediaWatch Server" | Out-Null
           if ($LASTEXITCODE -eq 0) { throw "La desinstalacion no quito la regla del cortafuegos" }
           Write-Host "Desinstalacion OK: la regla del cortafuegos ya no existe"
+          # El ultimo netsh «fallo» a proposito (la regla ya no existe) y pwsh devolveria su codigo de salida.
+          $global:LASTEXITCODE = 0
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4

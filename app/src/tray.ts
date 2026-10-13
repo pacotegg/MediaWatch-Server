@@ -4,8 +4,17 @@ import { ServerManager } from './server';
 import { getDataDir, loadConfig, getLocalIP } from './config';
 import { openWizard } from './wizard';
 import { openConnectWindow } from './connect';
+import { actualizaciones, buscarActualizaciones, estadoActualizacion, instalarYReiniciar } from './actualizaciones';
 
 let tray: Tray | null = null;
+
+function entradaActualizacion(): Electron.MenuItemConstructorOptions {
+  const e = estadoActualizacion();
+  if (e.fase === 'lista') return { label: `Reiniciar para actualizar a la v${e.version}`, click: () => instalarYReiniciar() };
+  if (e.fase === 'descargando') return { label: `Descargando actualización${e.version ? ' v' + e.version : ''}${e.porcentaje !== undefined ? ' (' + e.porcentaje + ' %)' : ''}…`, enabled: false };
+  if (e.fase === 'buscando') return { label: 'Buscando actualizaciones…', enabled: false };
+  return { label: e.fase === 'al-dia' ? `Buscar actualizaciones (v${app.getVersion()}, al día)` : 'Buscar actualizaciones', click: () => buscarActualizaciones() };
+}
 
 export function createTray(serverManager: ServerManager): Tray {
   if (tray) return tray;
@@ -91,6 +100,7 @@ export function createTray(serverManager: ServerManager): Tray {
           updateMenu();
         },
       },
+      ...(app.isPackaged ? [entradaActualizacion()] : []),
       {
         label: 'Salir de MediaWatch Server',
         click: async () => {
@@ -117,6 +127,8 @@ export function createTray(serverManager: ServerManager): Tray {
     updateMenu();
   });
 
+  actualizaciones.on('cambio', () => updateMenu());
+
   tray.on('double-click', () => {
     const config = loadConfig();
     shell.openExternal(`http://localhost:${config.port || 8730}`);
@@ -129,7 +141,7 @@ export function createTray(serverManager: ServerManager): Tray {
   let ultimoEstado = '';
   setInterval(() => {
     const cfg = loadConfig();
-    const estado = `${serverManager.getStatus()}|${serverManager.getGaveUp()}|${getLocalIP()}|${cfg.port || 8730}`;
+    const estado = `${serverManager.getStatus()}|${serverManager.getGaveUp()}|${getLocalIP()}|${cfg.port || 8730}|${JSON.stringify(estadoActualizacion())}`;
     if (estado === ultimoEstado) return;
     ultimoEstado = estado;
     updateMenu();
