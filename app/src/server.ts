@@ -1,8 +1,30 @@
 import { spawn, ChildProcess } from 'node:child_process';
 import { join } from 'node:path';
-import { existsSync, createWriteStream } from 'node:fs';
+import { appendFileSync, closeSync, existsSync, openSync, renameSync, statSync } from 'node:fs';
 import { app } from 'electron';
 import { getDataDir, loadConfig } from './config';
+
+const LOG_MAX_BYTES = 20 * 1024 * 1024;
+
+// Los registros se abren como descriptores que hereda el proceso hijo, sin tuberías: así no hay
+// ficheros que cerrar en cada reinicio ni escrituras tras el final de un flujo. Los avisos del
+// gestor van con appendFileSync, que no depende de que nada siga abierto.
+function anotar(fichero: string, mensaje: string): void {
+  try {
+    appendFileSync(fichero, mensaje);
+  } catch {
+    // Sin poder escribir el registro no hay nada más que hacer.
+  }
+}
+
+// Con más de 20 MB el registro se aparta a .1 (se pierde el anterior .1) para que no crezca sin fin.
+function rotarSiGrande(fichero: string): void {
+  try {
+    if (statSync(fichero).size > LOG_MAX_BYTES) renameSync(fichero, fichero + '.1');
+  } catch {
+    // No existe todavía.
+  }
+}
 
 export class ServerManager {
   private process: ChildProcess | null = null;
@@ -45,8 +67,10 @@ export class ServerManager {
     const config = loadConfig();
     const serverScript = join(this.corePath, 'server', 'src', 'index.ts');
 
-    const logStream = createWriteStream(join(dataDir, 'server.log'), { flags: 'a' });
-    const errStream = createWriteStream(join(dataDir, 'server.err'), { flags: 'a' });
+    const logFile = join(dataDir, 'server.log');
+    const errFile = join(dataDir, 'server.err');
+    rotarSiGrande(logFile);
+    rotarSiGrande(errFile);
 
     const env: Record<string, string | undefined> = {
       ...process.env,
@@ -65,47 +89,52 @@ export class ServerManager {
     const nodeExecutable = this.findBinary('node') ?? 'node';
 
     this.stopping = false;
+    let logFd = -1;
+    let errFd = -1;
     try {
+      logFd = openSync(logFile, 'a');
+      errFd = openSync(errFile, 'a');
       const child = spawn(nodeExecutable, [serverScript], {
         cwd: join(this.corePath, 'server'),
         env,
-        stdio: ['ignore', 'pipe', 'pipe'],
+        stdio: ['ignore', logFd, errFd],
         windowsHide: true,
       });
 
       this.process = child;
 
-      child.stdout?.pipe(logStream);
-      child.stderr?.pipe(errStream);
-
       child.on('error', (err) => {
-        errStream.write(`[Electron ServerManager] Error al lanzar proceso: ${err.message}\n`);
+        anotar(errFile, `[Electron ServerManager] Error al lanzar proceso: ${err.message}\n`);
         if (this.process === child) this.isRunning = false;
       });
 
       child.on('exit', (code, signal) => {
-        logStream.write(`[Electron ServerManager] Proceso terminado con código ${code}, señal ${signal}\n`);
+        anotar(logFile, `[Electron ServerManager] Proceso terminado con código ${code}, señal ${signal}\n`);
         // Un reinicio manual ya ha arrancado otro proceso: este aviso llega tarde y no le toca.
         if (this.process !== child) return;
         this.isRunning = false;
         this.process = null;
-        if (!this.stopping) this.scheduleRestart(errStream);
+        if (!this.stopping) this.scheduleRestart(errFile);
       });
 
       this.isRunning = true;
     } catch (e: any) {
-      errStream.write(`[Electron ServerManager] Excepción al lanzar servidor: ${e?.message}\n`);
+      anotar(errFile, `[Electron ServerManager] Excepción al lanzar servidor: ${e?.message}\n`);
       this.isRunning = false;
+    } finally {
+      // El hijo ya tiene su copia de los descriptores.
+      if (logFd >= 0) closeSync(logFd);
+      if (errFd >= 0) closeSync(errFd);
     }
   }
 
   // Si el servidor se cae solo, se vuelve a levantar a los 3 s; con más de 5 caídas en
   // 5 minutos se deja parado para no entrar en un bucle (el motivo queda en server.err).
-  private scheduleRestart(errStream: NodeJS.WritableStream): void {
+  private scheduleRestart(errFile: string): void {
     const ahora = Date.now();
     this.restartTimes = this.restartTimes.filter((t) => ahora - t < 5 * 60 * 1000);
     if (this.restartTimes.length >= 5) {
-      errStream.write('[Electron ServerManager] Demasiadas caídas seguidas: no se reinicia más. Revisa server.err.\n');
+      anotar(errFile, '[Electron ServerManager] Demasiadas caídas seguidas: no se reinicia más. Revisa server.err.\n');
       return;
     }
     this.restartTimes.push(ahora);
